@@ -11,6 +11,17 @@ struct MapDownloadInfo { rel: String, bytes: u64, files: u32 }
 #[derive(Serialize, Clone)]
 struct ProgressPayload { rel: String, file: String, index: u32, total: u32, received: u64, size: u64 }
 
+/// 更新检测结果（字段以 camelCase 传给前端）
+#[derive(Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+struct UpdateInfo {
+    current: String,
+    latest: String,
+    has_update: bool,
+    url: String,
+    name: String,
+}
+
 /// 递归复制目录（迁移旧版下载目录用；已存在的文件不覆盖）
 fn copy_tree(src: &Path, dst: &Path) -> std::io::Result<()> {
     std::fs::create_dir_all(dst)?;
@@ -131,7 +142,7 @@ async fn three_d_download(
                 if attempt % 2 == 1 { urls.insert(0, u2); } else { urls.push(u2); }
             }
             for url in urls {
-                let resp = match client.get(&url).header("X-App-Version", "46.1.0").send().await {
+                let resp = match client.get(&url).header("X-App-Version", env!("CARGO_PKG_VERSION")).send().await {
                     Ok(r) if r.status().is_success() => r,
                     Ok(r) => { last_err = format!("HTTP {} {}", r.status(), url); continue; }
                     Err(e) => { last_err = format!("{} {}", e, url); continue; }
@@ -164,6 +175,68 @@ async fn three_d_download(
     Ok(written)
 }
 
+/* ---------------- 更新检测 ---------------- */
+
+/// 把 "v46.1.0" 拆成 [46, 1, 0]，按段做数值比较
+fn version_key(v: &str) -> Vec<u64> {
+    v.trim()
+        .trim_start_matches(|c| c == 'v' || c == 'V')
+        .split(|c: char| !c.is_ascii_digit())
+        .filter(|s| !s.is_empty())
+        .filter_map(|s| s.parse::<u64>().ok())
+        .collect()
+}
+
+/// 查询 GitHub 上的最新 Release，与当前版本比较
+#[tauri::command]
+async fn check_update() -> Result<UpdateInfo, String> {
+    let current = env!("CARGO_PKG_VERSION").to_string();
+    let client = reqwest::Client::builder()
+        .user_agent("SquadCalc-Desktop")
+        .timeout(std::time::Duration::from_secs(12))
+        .build()
+        .map_err(|e| e.to_string())?;
+    let resp = client
+        .get("https://api.github.com/repos/WzzzzzzW/squadcalc/releases/latest")
+        .header("Accept", "application/vnd.github+json")
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+    if !resp.status().is_success() {
+        return Err(format!("HTTP {}", resp.status()));
+    }
+    let bytes = resp.bytes().await.map_err(|e| e.to_string())?;
+    let json: serde_json::Value = serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
+    let latest = json
+        .get("tag_name")
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .trim_start_matches(|c| c == 'v' || c == 'V')
+        .to_string();
+    let has_update = !latest.is_empty() && version_key(&latest) > version_key(&current);
+    Ok(UpdateInfo {
+        current,
+        latest,
+        has_update,
+        url: json.get("html_url").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+        name: json.get("name").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+    })
+}
+
+/// 用系统默认浏览器打开链接（仅允许 http/https）
+#[tauri::command]
+fn open_external(url: String) -> Result<(), String> {
+    let url = url.trim();
+    if !(url.starts_with("https://") || url.starts_with("http://")) {
+        return Err("仅允许 http/https 链接".to_string());
+    }
+    std::process::Command::new("explorer")
+        .arg(url)
+        .spawn()
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 /* ---------------- 离线数据协议（数据独立于 exe） ----------------
  * 数据根目录按以下顺序解析：
  *   1) <exe 目录>\sqdata.txt —— 一行纯文本，内容是数据根目录（由“数据包”安装程序写入）
@@ -171,22 +244,30 @@ async fn three_d_download(
  * 数据根目录下应有 api\ 子目录，因此页面按 http://sqdata.localhost/api/... 访问。
  */
 
-fn exe_dir() -> PathBuf {
-    std::env::current_exe()
-        .ok()
-        .and_then(|p| p.parent().map(|x| x.to_path_buf()))
-        .unwrap_or_else(|| PathBuf::from("."))
+/// exe 所在目录（进程内只解析一次）
+fn exe_dir() -> &'static Path {
+    static DIR: std::sync::OnceLock<PathBuf> = std::sync::OnceLock::new();
+    DIR.get_or_init(|| {
+        std::env::current_exe()
+            .ok()
+            .and_then(|p| p.parent().map(|x| x.to_path_buf()))
+            .unwrap_or_else(|| PathBuf::from("."))
+    })
 }
 
-fn data_root() -> PathBuf {
-    let dir = exe_dir();
-    if let Ok(text) = std::fs::read_to_string(dir.join("sqdata.txt")) {
-        let p = text.trim();
-        if !p.is_empty() {
-            return PathBuf::from(p);
+/// 数据根目录（进程内只解析一次，避免每个资源请求都读一遍 sqdata.txt）
+fn data_root() -> &'static Path {
+    static ROOT: std::sync::OnceLock<PathBuf> = std::sync::OnceLock::new();
+    ROOT.get_or_init(|| {
+        let dir = exe_dir();
+        if let Ok(text) = std::fs::read_to_string(dir.join("sqdata.txt")) {
+            let p = text.trim();
+            if !p.is_empty() {
+                return PathBuf::from(p);
+            }
         }
-    }
-    dir.join("data")
+        dir.join("data")
+    })
 }
 
 fn mime_of(path: &Path) -> &'static str {
@@ -236,17 +317,30 @@ fn serve_data(request: tauri::http::Request<Vec<u8>>) -> tauri::http::Response<V
         return deny(404);
     }
     let file = data_root().join(&rel);
+    // HEAD 只要长度，直接看元数据，避免把整个大图读进内存又丢掉
+    if request.method() == tauri::http::Method::HEAD {
+        return match std::fs::metadata(&file) {
+            Ok(md) if md.is_file() => tauri::http::Response::builder()
+                .status(200)
+                .header("Content-Type", mime_of(&file))
+                .header("Content-Length", md.len())
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Cache-Control", "no-cache")
+                .body(Vec::new())
+                .unwrap(),
+            _ => deny(404),
+        };
+    }
     match std::fs::read(&file) {
         Ok(bytes) => {
             let len = bytes.len();
-            let is_head = request.method() == tauri::http::Method::HEAD;
             tauri::http::Response::builder()
                 .status(200)
                 .header("Content-Type", mime_of(&file))
                 .header("Content-Length", len)
                 .header("Access-Control-Allow-Origin", "*")
                 .header("Cache-Control", "no-cache")
-                .body(if is_head { Vec::new() } else { bytes })
+                .body(bytes)
                 .unwrap()
         }
         Err(_) => deny(404),
@@ -285,7 +379,8 @@ fn main() {
         // 离线数据走自定义协议，数据目录可与 exe 分离安装
         .register_uri_scheme_protocol("sqdata", |_ctx, request| serve_data(request))
         .invoke_handler(tauri::generate_handler![
-            three_d_default_root, three_d_scan, three_d_delete, three_d_download
+            three_d_default_root, three_d_scan, three_d_delete, three_d_download,
+            check_update, open_external
         ])
         .run(tauri::generate_context!())
         .expect("error while running squadcalc desktop application");

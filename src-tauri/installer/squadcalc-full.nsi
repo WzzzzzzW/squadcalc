@@ -6,7 +6,7 @@
 Unicode true
 Name "SquadCalc 完整版"
 Caption "SquadCalc 完整版 安装"
-OutFile "..\..\SquadCalc_46.1.0_x64-setup.exe"
+OutFile "..\..\SquadCalc_46.1.1_x64-setup.exe"
 InstallDir "$LOCALAPPDATA\Programs\SquadCalc"
 RequestExecutionLevel user
 SetCompressor zlib
@@ -79,7 +79,7 @@ Section "SquadCalc 主程序 (必需)" SecMain
 
     ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\SquadCalc" "DisplayName" "SquadCalc - 战术小队助手"
-    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\SquadCalc" "DisplayVersion" "46.1.0"
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\SquadCalc" "DisplayVersion" "46.1.1"
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\SquadCalc" "Publisher" "SquadCalc"
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\SquadCalc" "DisplayIcon" "$INSTDIR\SquadCalc.exe"
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\SquadCalc" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""

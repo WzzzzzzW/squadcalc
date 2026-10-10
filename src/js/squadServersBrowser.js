@@ -68,21 +68,15 @@ export default class SquadServersBrowser {
             const data = await fetchServers({ signal: controller.signal });
             this.serversData = data.servers;
             this._lastFetch = Date.now();
-
-            // Initiate fuse index
-            this.fuse = new Fuse(this.serversData, {
-                includeScore: true,
-                threshold: 0.3,
-                distance: 100,
-                //minMatchCharLength: 3,
-                keys: ["attributes.name", "attributes.details.map"]
-            });
+            // 搜索索引改为惰性构建：轮询每 20s 更新一次数据，用户不一定在搜索，
+            // 这里只把索引标记为失效，等真正搜索时再重建
+            this.fuse = null;
 
         } catch (error) {
             // 服务器列表直连在线接口，获取失败时降级为空列表，避免表格渲染报错
             console.error("Error fetching server data:", error);
             this.serversData = [];
-            this.fuse = new Fuse([], { keys: ["attributes.name", "attributes.details.map"] });
+            this.fuse = null;
         } finally {
             clearTimeout(timeout);
         }
@@ -130,6 +124,23 @@ export default class SquadServersBrowser {
 
 
     /**
+     * 按需构建 Fuse 搜索索引（数据更新后 this.fuse 会被置空，下次搜索时在这里重建）
+     * @returns {Fuse}
+     */
+    ensureFuse() {
+        if (!this.fuse) {
+            this.fuse = new Fuse(this.serversData || [], {
+                includeScore: true,
+                threshold: 0.3,
+                distance: 100,
+                keys: ["attributes.name", "attributes.details.map"]
+            });
+        }
+        return this.fuse;
+    }
+
+
+    /**
      * Filters servers by name or map and updates the table.
      * Uses Fuse.js for fuzzy matching, so typos like "YEORIVKA" will match "YEHORIVKA".
      * @param {string} query
@@ -141,9 +152,7 @@ export default class SquadServersBrowser {
             return;
         }
 
-        if (!this.fuse) return;
-
-        const results = this.fuse.search(query);
+        const results = this.ensureFuse().search(query);
         this.filteredData = results.map(r => r.item);
         this.renderRows(this.filteredData);
     }
@@ -496,9 +505,16 @@ export default class SquadServersBrowser {
             this.handleFavoriteClick(event);
         });
 
-        // Search input listener
+        // Search input listener（逐字过滤会整表重建，加 150ms 防抖）
         const searchInput = document.getElementById("serverSearch");
-        if (searchInput) searchInput.addEventListener("input", (e) => { this.filterServers(e.target.value);});
+        if (searchInput) {
+            let searchTimer = null;
+            searchInput.addEventListener("input", (e) => {
+                const value = e.target.value;
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => this.filterServers(value), 150);
+            });
+        }
 
         // Refresh Button listener
         const refreshBtn = document.getElementById("refreshBtn");

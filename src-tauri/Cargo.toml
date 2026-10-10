@@ -1,6 +1,6 @@
 [package]
 name = "squadcalc-desktop"
-version = "46.1.0"
+version = "46.1.1"
 description = "SquadCalc Desktop - 离线版战术小队地图/迫击炮助手"
 authors = ["SquadCalc"]
 edition = "2021"

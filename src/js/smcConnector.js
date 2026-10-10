@@ -5,6 +5,7 @@ let isConnecting = false;
 let socketMap = null;
 let socketCoordinates = null;
 let connectionInterval = null;
+let coordinateInterval = null;
 
 /**
  * Initializes WebSocket connections for map and coordinate data communication
@@ -39,8 +40,10 @@ function cleanup() {
     if (socketMap) socketMap.close();
     if (socketCoordinates) socketCoordinates.close();
     if (connectionInterval) clearInterval(connectionInterval);
+    if (coordinateInterval) clearInterval(coordinateInterval);
     socketMap = null;
     socketCoordinates = null;
+    coordinateInterval = null;
 }
 
 /**
@@ -51,7 +54,9 @@ async function setupWebSockets() {
         socketMap = new WebSocket("ws://127.0.0.1:12345");
         socketCoordinates = new WebSocket("ws://127.0.0.1:12346");
 
-        setInterval(() => checkCoordinates(socketCoordinates), 1000);
+        // 重连时会再次进入这里，先清掉上一个坐标轮询，避免定时器累积
+        if (coordinateInterval) clearInterval(coordinateInterval);
+        coordinateInterval = setInterval(() => checkCoordinates(socketCoordinates), 1000);
 
         socketMap.addEventListener("open", () => {
             console.log("Connected to SquadMortarOverlay.exe");

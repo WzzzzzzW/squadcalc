@@ -28,6 +28,7 @@ import "./components/shared/_tooltips.scss";
 import "./components/shared/_responsive.scss";
 
 import "./components/contextMenu/contextMenu.scss";
+import "./components/updateBanner/updateBanner.scss";
 
 
 // JS

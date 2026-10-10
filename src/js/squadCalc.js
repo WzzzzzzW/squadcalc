@@ -16,6 +16,7 @@ import SquadSession from "./squadSession.js";
 import SquadFiringSolution from "./squadFiringSolution.js";
 import SquadSettings from "./squadSettings.js";
 import packageInfo from "../../package.json";
+import { invoke } from "@tauri-apps/api/core";
 import { marked, Renderer } from "marked";
 
 const changelogRenderer = new Renderer();
@@ -116,6 +117,10 @@ export default class SquadCalc {
         this.loadTheme();
         checkApiHealth();
         initWebSocket();
+        // 首屏渲染完成后再检查更新，避免与启动阶段争抢资源（失败静默）
+        const triggerUpdateCheck = () => setTimeout(() => this.checkForUpdates(), 1200);
+        if (document.readyState === "complete") triggerUpdateCheck();
+        else window.addEventListener("load", triggerUpdateCheck, { once: true });
         console.log(`SquadCalc v${this.version} Loaded! 🎯`);
     }
 
@@ -1097,7 +1102,6 @@ export default class SquadCalc {
         $(window).on("resize", () => { this.resizeInputsOnResize(); });
         $(document).on("click", ".del", (event) => { this.removeSaves(event.target); });
         $(document).on("click", ".savespan", (event) => { this.copySave($(event.target)); });
-        $(".savespan").on("click", (event) => { this.copySave(event); });
         $("#savebutton").on("click",  () => { this.saveCalc(); });
         $("#copy").on("click", (event) => { this.copyCalc(event); });
 
@@ -1499,6 +1503,40 @@ export default class SquadCalc {
         toast.querySelector("p").innerHTML = i18next.t(`tooltips:${text}`);
 
         this._countdown = setTimeout(() => { this.closeToast(); }, 5000);
+    }
+
+    /**
+     * 桌面版：启动时静默向 GitHub 查询最新 Release，有新版才提示；网络失败静默忽略，不影响启动
+     */
+    async checkForUpdates() {
+        if (!window.__TAURI_INTERNALS__) return;
+        try {
+            const info = await invoke("check_update");
+            if (info?.hasUpdate) this.showUpdateBanner(info);
+        } catch (error) {
+            console.warn("Update check skipped:", error);
+        }
+    }
+
+    showUpdateBanner(info) {
+        const banner = document.querySelector("#updateBanner");
+        if (!banner) return;
+
+        document.querySelector("#updateBannerVersion").textContent =
+            `v${info.latest} · ${i18next.t("common:updateCurrent")} v${info.current}`;
+
+        document.querySelector("#updateBannerDownload").addEventListener("click", () => {
+            invoke("open_external", { url: info.url }).catch((error) => console.warn(error));
+        });
+
+        document.querySelector("#updateBannerClose").addEventListener("click", () => {
+            // 先播向上退出动画，结束后再真正隐藏
+            banner.addEventListener("animationend", () => banner.classList.add("hidden"), { once: true });
+            banner.style.animation = "updateBannerOut 0.28s ease-in forwards";
+        });
+
+        banner.classList.remove("hidden");
+        banner.style.animation = "updateBannerIn 0.36s cubic-bezier(.2, .8, .3, 1) forwards";
     }
 
     toggleFocusMode() {

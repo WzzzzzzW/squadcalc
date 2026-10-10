@@ -1,0 +1,124 @@
+/* 启动时的版本更新提示条（桌面版专用） */
+#updateBanner {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: min(720px, 92vw);
+    padding: 10px 12px 10px 14px;
+    border: 1px solid rgb(207, 106, 12, 0.55);
+    border-left: 4px solid rgb(207, 106, 12);
+    border-radius: 4px;
+    background: #17191d;
+    box-shadow: 0 6px 24px rgb(0, 0, 0, 0.55);
+    transform: translateX(-50%);
+
+    &.hidden {
+        pointer-events: none;
+    }
+
+    .updateBannerIcon {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 3px;
+        background: rgb(207, 106, 12, 0.16);
+        color: rgb(207, 106, 12);
+
+        svg {
+            width: 17px;
+            height: 17px;
+            fill: currentcolor;
+        }
+    }
+
+    .updateBannerText {
+        flex: 1;
+        min-width: 0;
+        text-align: left;
+
+        h4 {
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 0.06em;
+        }
+
+        p {
+            margin-top: 2px;
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            opacity: 0.7;
+        }
+    }
+
+    #updateBannerDownload {
+        flex: 0 0 auto;
+        padding: 7px 14px;
+        border: 1px solid rgb(207, 106, 12);
+        border-radius: 3px;
+        background: rgb(207, 106, 12);
+        color: #111;
+        font-size: 12px;
+        font-weight: bold;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        transition: background 0.15s ease;
+
+        &:hover {
+            background: rgb(232, 126, 24);
+        }
+    }
+
+    #updateBannerClose {
+        flex: 0 0 auto;
+        width: 26px;
+        height: 26px;
+        padding: 4px;
+        border-radius: 3px;
+        background: transparent;
+        color: #fff;
+        opacity: 0.5;
+        cursor: pointer;
+
+        svg {
+            width: 100%;
+            height: 100%;
+            fill: currentcolor;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+/* 向下入场 / 向上退出 */
+@keyframes updateBannerIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-140%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes updateBannerOut {
+    from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-140%);
+    }
+}
