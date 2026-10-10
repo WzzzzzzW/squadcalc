@@ -63,6 +63,16 @@ makensis src-tauri/installer/squadcalc-full.nsi
 
 地图数据与在线接口均来自官方 squadcalc.app，本项目不修改其内容。
 
+## 开发说明与致谢
+
+本项目的桌面化改造与开发过程使用了 **DeepSeek V4.1 Flash** 模型（`deepseek-flash`）。
+
+感谢 DeepSeek 提供模型与技术支持：
+
+- 官方网站：https://www.deepseek.com
+- GitHub：https://github.com/deepseek-ai
+- 模型发布说明：https://www.deepseek.com/news/deepseek-v4-1-flash/
+
 ## 许可
 
 本项目基于 [sh4rkman/SquadCalc](https://github.com/sh4rkman/SquadCalc) 修改，沿用其 MIT（非商用）许可，版权归原作者所有。详见 [LICENSE](./LICENSE)。
