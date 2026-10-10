@@ -46,7 +46,7 @@ if errorlevel 1 goto :fail
 echo.
 echo ============================================================
 echo   DONE - installer:
-for %%F in ("SquadCalc_46.1.1_x64-setup.exe") do (
+for %%F in ("SquadCalc_46.1.2_x64-setup.exe") do (
     echo   %%~fF
     echo   %%~zF bytes
 )

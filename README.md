@@ -12,7 +12,7 @@
 
 ## 下载
 
-到 [Releases](https://github.com/WzzzzzzW/squadcalc/releases) 页面下载最新版安装包 `SquadCalc_46.1.1_x64-setup.exe`（已内置离线数据，约 600 MB）。
+到 [Releases](https://github.com/WzzzzzzW/squadcalc/releases) 页面下载最新版安装包 `SquadCalc_46.1.2_x64-setup.exe`（已内置离线数据，约 600 MB）。
 
 系统要求：Windows 10 / 11（64 位）。依赖 WebView2 运行时，Win10 1809 之后与 Win11 一般已内置，缺失时安装程序会提示安装。
 
@@ -48,7 +48,7 @@ cargo build --release --manifest-path src-tauri/Cargo.toml
 makensis src-tauri/installer/squadcalc-full.nsi
 ```
 
-产物为仓库根目录下的 `SquadCalc_46.1.1_x64-setup.exe`。
+产物为仓库根目录下的 `SquadCalc_46.1.2_x64-setup.exe`。
 
 ## 目录结构
 

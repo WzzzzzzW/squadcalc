@@ -1,7 +1,7 @@
 {
   "name": "squadcalc",
-  "version": "46.1.1",
-  "description": "The Ultimate In-Game Companion for Squad!",
+  "version": "46.1.2",
+  "description": "SquadCalc Desktop",
   "author": "Maxime 'sharkman' Boussard",
   "license": "MIT",
   "type": "module",

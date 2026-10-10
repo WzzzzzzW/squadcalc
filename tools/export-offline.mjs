@@ -330,6 +330,8 @@ if (!NO_HEIGHTMAP) {
 }
 
 console.log(`\n[4/4] 图层缩略图（${names.length} 个）…`);
+// 注意：源站缩略图为 1000×1000，全部加起来约 160 MB，而界面里最大只显示 250 px。
+// 导出后建议用图片工具统一缩到 512×512（约 50 MB），可显著减小安装包体积。
 await mkdir(path.join(imgRoot, 'thumbnails'), { recursive: true });
 await pool(names, CONC, async (n) => {
   const dest = path.join(imgRoot, 'thumbnails', `${n}.webp`);
