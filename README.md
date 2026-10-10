@@ -1,30 +1,30 @@
 # SquadCalc 桌面离线版
 
-把官方网页版 [SquadCalc](https://squadcalc.app) 做成 Windows 桌面应用，可离线浏览地图。
+将官方网页版 [SquadCalc](https://squadcalc.app) 封装为 Windows 桌面应用，内置全部地图与点位数据，断网也能看图、查点位。
 
-## 与原版的区别
+## 特性
 
-- 地图底图、图层、高程图、缩略图全部本地化，看图不需要联网
-- 服务器列表、热力图、多人协作等在线功能仍直连 squadcalc.app
-- 3D 地形资源在应用内按需下载，可查看已下载列表并卸载
-- 主程序与离线数据分离：主程序按自身目录下的 `sqdata.txt` 定位数据目录，通过自定义协议 `sqdata://` 读取
-- 打包为 Windows 安装程序，主程序与离线数据一次装完
+- 完全离线：地图底图、图层、高程图、缩略图全部本地化，看图不需要联网
+- 一键安装：主程序与离线数据打包成单个安装包，装完即用
+- 联机功能保留：服务器列表、热力图、多人协作等在线功能仍直连 squadcalc.app
+- 3D 地形按需下载：资源在应用内下载，可查看已下载列表并单独卸载
+- 数据可分离：主程序通过自定义协议 `sqdata://` 读取数据目录，位置由程序目录下的 `sqdata.txt` 指定，便于迁移到其它磁盘
 
 ## 下载
 
-在 Releases 页面下载 `SquadCalc_46.1.0_x64-setup.exe`（已内置离线数据，约 600 MB）。
+到 [Releases](https://github.com/WzzzzzzW/squadcalc/releases) 页面下载最新版安装包 `SquadCalc_46.1.0_x64-setup.exe`（已内置离线数据，约 600 MB）。
 
-系统要求：Windows 10 / 11。依赖 WebView2 运行时，Win10 1809 之后与 Win11 一般已内置，缺失时需要自行安装。
+系统要求：Windows 10 / 11（64 位）。依赖 WebView2 运行时，Win10 1809 之后与 Win11 一般已内置，缺失时安装程序会提示安装。
 
-## 构建
+## 从源码构建
 
-依赖：
+### 依赖
 
 - Node.js 22.13 或更高
 - Rust（rustup）与 MSVC 工具链
 - NSIS 3.x，用于生成安装程序
 
-步骤：
+### 步骤
 
 1. 安装前端依赖
 
@@ -50,7 +50,7 @@ makensis src-tauri/installer/squadcalc-full.nsi
 
 产物为仓库根目录下的 `SquadCalc_46.1.0_x64-setup.exe`。
 
-## 目录
+## 目录结构
 
 | 路径 | 说明 |
 | --- | --- |
@@ -61,17 +61,13 @@ makensis src-tauri/installer/squadcalc-full.nsi
 
 ## 数据来源
 
-地图数据与在线接口均来自官方 squadcalc.app，本项目不修改其内容。
+地图数据与在线接口均来自官方 [squadcalc.app](https://squadcalc.app)，本项目不修改其内容。
 
-## 开发说明与致谢
+## 致谢
 
-本项目的桌面化改造与开发过程使用了 **DeepSeek V4.1 Flash** 模型（`deepseek-flash`）。
-
-感谢 DeepSeek 提供模型与技术支持：
-
-- 官方网站：https://www.deepseek.com
-- GitHub：https://github.com/deepseek-ai
-- 模型发布说明：https://www.deepseek.com/news/deepseek-v4-1-flash/
+- 原项目 [sh4rkman/SquadCalc](https://github.com/sh4rkman/SquadCalc)：本项目的全部功能与数据都建立在其之上，感谢作者 Maxime "sharkman" Boussard 及所有贡献者
+- 地图与在线数据：[squadcalc.app](https://squadcalc.app)
+- 桌面化改造过程使用了 DeepSeek V4.1 Flash 模型辅助开发（[deepseek-ai](https://github.com/deepseek-ai)）
 
 ## 许可
 
