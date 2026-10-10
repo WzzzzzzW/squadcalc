@@ -1,0 +1,741 @@
+@use '../shared/variables';
+@use 'sass:color';
+
+@keyframes flag-shimmer {
+    0%   { left: -75%; }
+    100% { left: 150%; }
+}
+
+.unit-option {
+    display: flex;
+    gap: 10px;
+    .unit-logo {
+        width: 35px;
+        height: 35px;
+        &.selection {
+            border: none;
+        }
+    }
+    .unit-texts {
+        display: flex;
+        flex-direction: column;
+        // justify-content: center;
+        flex: 1;
+        min-width: 0;
+    }
+    .unit-type {
+        font-weight: bold;
+        font-size: 13px;
+        line-height: 1.5em;
+        margin-top: 0.3em;
+    }
+    .unit-name {
+        @include variables.light-text-outline;
+        color: #ccc;
+        font-size: 9px;
+        line-height: 1.3em;
+        font-style: italic;
+        text-transform: capitalize;
+    }
+}
+
+
+.hidden-selector {
+    display: none;
+}
+
+.btn-pin {
+    // Pin/unpin icon button, sits next to each team's unit picker
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(22px, 7vw, 32px);
+    height: clamp(34px, 11vw, 50px); // matches .unit-picker-btn
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    background-color: #111;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    svg {
+        width: 40%;
+        height: 40%;
+        fill: #ccc;
+        transform: rotate(45deg);
+        transition: transform 0.2s ease, fill 0.2s ease;
+    }
+    &:hover {
+        background-color: #2a2a2a;
+        svg {
+            fill: white;
+        }
+    }
+    &.active {
+        background-color: variables.$mainColor;
+        svg {
+            fill: white;
+            transform: none;
+        }
+        &:hover {
+            background-color: color.adjust(variables.$mainColor, $lightness: -8%);
+        }
+    }
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+        &:hover {
+            background-color: #111;
+        }
+    }
+}
+
+.countryFlags {
+    padding: 0;
+    margin: 0;
+    .img-flag {
+        width: 45px;
+        border: solid rgba(255, 255, 255, 0.336) 0.1px;
+        box-shadow: 0 0 5px rgb(37, 37, 37);
+    }
+    .flag-label {
+        position: relative;
+        letter-spacing: normal;
+        font-size: 1.4em;
+        line-height: 1.2em;
+    }
+}
+
+
+#factionsDialog {
+    border-radius: 0;
+    flex-direction: column;
+    height: 100dvh;
+    &:not([open]) {
+        display: none;
+    }
+    &[open] {
+        display: flex;
+    }
+    h2 {
+        text-align: center;
+        font-size: 2em;
+    }
+    .team-picker h2 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: clamp(1.6em, 6vw, 3em);
+        line-height: 1;
+        margin: 0;
+        padding: 0.3em 0;
+        text-transform: uppercase;
+
+        @include variables.text-outline;
+        .team-faction-name {
+            font-size: 0.7em;
+
+            @include variables.theme-font(variables.$mainFont);
+        }
+        .team-faction-name:empty {
+            display: none;
+        }
+    }
+    #factionTop {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        flex-shrink: 0;
+        .factionMenu-vs {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: clamp(2em, 8vw, 7em);
+            font-weight: 900;
+            line-height: 1;
+            pointer-events: none;
+            z-index: 2;
+
+            @include variables.text-outline;
+
+            @media screen and (width <= 35em) {
+                display: none;
+            }
+        }
+        > * {
+            position: relative;
+            z-index: 1;
+        }
+        .team-bg {
+            position: absolute;
+            bottom: 0;
+            width: 48%;
+            height: 90%;
+            object-fit: contain;
+            object-position: bottom center;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.75;
+            &#teamBg1 {
+                left: -15%;
+                mask-image: linear-gradient(to left, transparent 0%, black 25%), linear-gradient(to top, transparent 0%, black 20%), linear-gradient(to bottom, transparent 0%, black 10%);
+                mask-composite: intersect;
+                -webkit-mask-image: linear-gradient(to left, transparent 0%, black 25%), linear-gradient(to top, transparent 0%, black 20%), linear-gradient(to bottom, transparent 0%, black 10%);
+                -webkit-mask-composite: source-in;
+            }
+            &#teamBg2 {
+                right: -15%;
+                transform: scaleX(-1);
+                mask-image: linear-gradient(to left, transparent 0%, black 25%), linear-gradient(to top, transparent 0%, black 20%), linear-gradient(to bottom, transparent 0%, black 10%);
+                mask-composite: intersect;
+                -webkit-mask-image: linear-gradient(to left, transparent 0%, black 25%), linear-gradient(to top, transparent 0%, black 20%), linear-gradient(to bottom, transparent 0%, black 10%);
+                -webkit-mask-composite: source-in;
+            }
+        }
+    }
+    #factionMenu {
+        width: 100%;
+        padding: 0;
+        margin: 1.5em auto 0;
+        text-align: center;
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        .team-picker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 50%;
+        }
+        .team-selectors {
+            display: flex;
+            flex-direction: row;
+            gap: 0.75em;
+            justify-content: center;
+            align-items: center;
+            margin: 0.4em 0;
+        }
+        #team2 .team-selectors {
+            flex-direction: row-reverse;
+        }
+        #team2 .unit-picker-btn img {
+            transform: scaleX(-1);
+        }
+        .picker-btn {
+            position: relative;
+            cursor: pointer;
+            background: #111;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: box-shadow 0.1s ease, transform 0.1s ease;
+            user-select: none;
+            &:hover {
+                box-shadow: 0 0 0 2px variables.$mainColor, 0 4px 12px rgba(0,0,0,0.4);
+                transform: scale(1.05);
+            }
+        }
+        .faction-picker-btn {
+            width: clamp(70px, 22vw, 100px);
+            aspect-ratio: 2 / 1;
+            img {
+                position: absolute;
+                inset: -1px;
+                width: calc(100% + 2px);
+                height: calc(100% + 2px);
+                object-fit: cover;
+                pointer-events: none;
+            }
+            .team-label {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                pointer-events: none;
+                color: white;
+                font-size: clamp(0.8em, 2.5vw, 1.5em);
+                font-weight: 700;
+                letter-spacing: normal;
+                text-transform: uppercase;
+                transition: opacity 0.25s ease-in-out;
+
+                @include variables.text-outline;
+                @include variables.theme-font(variables.$mainFont);
+            }
+            &:hover .team-label:has(~ .picker-label) {
+                opacity: 0;
+            }
+            .picker-label {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                pointer-events: none;
+                opacity: 0;
+                background: rgba(0, 0, 0, 0.45);
+                transition: opacity 0.25s ease-in-out;
+                svg {
+                    width: 1.4em;
+                    height: 1.4em;
+                    fill: white;
+                }
+            }
+            &:hover .picker-label {
+                opacity: 1;
+            }
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -75%;
+                width: 50%;
+                height: 100%;
+                background: linear-gradient(
+                    120deg,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.35) 50%,
+                    transparent 100%
+                );
+                z-index: 1;
+                pointer-events: none;
+            }
+            &:hover::before {
+                animation: flag-shimmer 0.55s ease-in-out;
+            }
+        }
+        .unit-picker-btn {
+            width: clamp(44px, 14vw, 65px);
+            height: clamp(34px, 11vw, 50px);
+            opacity: 0.3;
+            pointer-events: none;
+            background: transparent;
+            outline: none;
+            &.ready {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            &:hover {
+                background: transparent;
+                box-shadow: 0 0 0 2px variables.$mainColor;
+            }
+            img {
+                width: 70%;
+                height: auto;
+                object-fit: contain;
+                pointer-events: none;
+            }
+            .picker-label {
+                position: absolute;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                pointer-events: none;
+                opacity: 0;
+                background: rgba(0, 0, 0, 0.65);
+                transition: opacity 0.25s ease-in-out;
+                svg {
+                    width: 1.2em;
+                    height: 1.2em;
+                    fill: white;
+                }
+            }
+            &:hover .picker-label {
+                opacity: 1;
+            }
+        }
+    }
+    #factionVehicles {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        overflow-y: scroll;
+        scrollbar-width: none;
+        max-height: 75%;
+        .no-vehicle {
+            width: 100%;
+            text-align: center;
+            padding: 1em 0;
+            color: #888;
+            font-style: italic;
+        }
+        .vehicle-card {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            background: #1e1e1e;
+            border: 1px solid #444;
+            margin: 0.25em 0;
+            width: 100%;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            flex-direction: column;
+            transition: all 0.1s ease-in-out;
+            .card-content {
+                padding: 0.5em;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                width: 100%;
+            }
+            .image {
+                display: none;
+            }
+            // Hover effect only for devices that support true hover (desktop)
+            @media (hover: hover) {
+                &:hover {
+                    background: variables.$mainColor;
+                    .vehicle-meta .delayHolder {
+                        .count-delay {
+                            color: white;
+                        }
+                        .count-delay-icon svg {
+                            fill: white;
+                        }
+                    } 
+                    .vehicle-meta .respawnHolder {
+                        .respawn {
+                            color: white;
+                        }
+                        .respawn-icon {
+                            svg {
+                                fill: white!important;;
+                            }
+                        }
+                    }
+                    .vehicle-meta .ticketHolder {
+                        .ticket {
+                            color: white;
+                        }
+                        .ticket-icon {
+                            svg {
+                                fill: white;
+                            }
+                        }
+                    }
+                }
+            }
+            &.selected {
+                background: variables.$mainColor;
+                height: auto;
+                flex-direction: column;
+                align-items: flex-start;
+                .vehicle-meta .delayHolder {
+                    .count-delay {
+                        color: white;
+                    }
+                    .count-delay-icon svg {
+                        fill: white;
+                    }
+                } 
+                .vehicle-meta .respawnHolder {
+                    .respawn {
+                        color: white;
+                    }
+                    .respawn-icon {
+                        svg {
+                            fill: white!important;
+                        }
+                    }
+                }
+                 .vehicle-meta .ticketHolder {
+                    .ticket {
+                        color: white;
+                    }
+                    .ticket-icon {
+                        svg {
+                            fill: white;
+                        }
+                    }
+                }
+                .image {
+                    margin-top: 0.5em;
+                    display: block;
+                    bottom: 0;
+                    width: 100%;
+                    position: relative;
+                    img {
+                        width: 100%;
+                        &.mirrored {
+                            transform: scaleX(-1);
+                        }
+                    }
+                    .tag {
+                        border-radius: 6px;
+                        background: linear-gradient(160deg, rgba(45, 43, 43, 0.92), rgba(22, 21, 21, 0.92));
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+                        width: 4em;
+                        height: 4em;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        flex-shrink: 0;
+                        .passenger {
+                            position: absolute;
+                            font-size: 14px;
+                            letter-spacing: 0;
+                            margin-left: 13px;
+                            pointer-events: none;
+                        }
+                        &.armor-link, &.wiki-link {
+                            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+                            &:hover {
+                                transform: scale(1.15);
+                                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+                                z-index: 2;
+                            }
+                            text-decoration: none;
+                            > span {
+                                color: white;
+                                font-family: oswald, sans-serif;
+                                font-weight: bold;
+                                text-align: center;
+                                line-height: 1.3;
+                                letter-spacing: 0.05em;
+                            }
+                            .armor-yellow {
+                                color: #ffc40b;
+                            }
+                        }
+                        &.wiki-link > span {
+                            font-size: 1.4em;
+                        }
+                        &.armor-link > span {
+                            font-size: 1em;
+                        }
+                    }
+                    .tags {
+                        position: absolute;
+                        bottom: 0.5em;
+                        left: 0.5em;
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 0.5em;
+                        z-index: 1;
+                    }
+                    .links {
+                        position: absolute;
+                        bottom: 0.5em;
+                        right: 0.5em;
+                        display: flex;
+                        gap: 0.5em;
+                        z-index: 1;
+                    }
+                }
+
+            }
+        }
+        button {
+            cursor: pointer;
+        }
+        .vehicle-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.25em;
+            margin-right: 0.75em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            img {
+                width: 85%;
+            }
+        }
+        .vehicle-count {
+            font-size: 1.7em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .vehicle-info {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            flex-grow: 1;
+            letter-spacing: normal;
+            .vehicle-type {
+                font-size: 1.3em;
+                font-weight: bold;
+                color: #fff;
+                cursor: pointer;
+                text-align: center;
+                white-space: nowrap;
+                margin-right: 1em;
+            }
+            .vehicle-meta {
+                display: flex;
+                flex-direction: column;
+                text-align: right;
+                color: #aaa;
+                font-size: 1.1em;
+                .respawnHolder, .ticketHolder {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.3em;
+                    margin-bottom: 0.3em;
+                    &.warning {
+                        color: variables.$mainColor;
+                        .respawn-icon svg {
+                            fill: variables.$mainColor;
+                        }
+                    }
+                    .respawn-icon, .ticket-icon {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 1em;
+                        height: 1em;
+                        padding: 0;
+                        margin: 0;
+                        svg {
+                            width: 100%;
+                            height: 100%;
+                            fill: #aaa;
+                        }
+                    }
+                }
+                .delayHolder {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.3em;
+                    min-height: 1.4em;
+                    .count-delay-icon {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 1em;
+                        height: 1em;
+                        padding: 0;
+                        margin: 0;
+                        svg {
+                            width: 100%;
+                            height: 100%;
+                            fill: variables.$mainColor;
+                        }
+                    }
+                    .count-delay {
+                        color: variables.$mainColor;
+                    }
+                }
+            }
+        }
+        
+    }
+    #team1Vehicles, #team2Vehicles {
+        width: 47%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: scroll;
+        height: auto;
+        padding-bottom: 3px;
+        scrollbar-width: none;
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        h3 {
+            margin: 0;
+            padding: 0.5em 0;
+        }
+    }
+    #team1Vehicles {
+        margin-left: 2%;
+        margin-right: 2%;
+        .vehicle-card .card-content {
+            align-items: center;
+            flex-direction: row-reverse;
+            .vehicle-type {
+                text-align: right;
+            }
+            .vehicle-icon {
+                margin-right: 0;
+                margin-left: 0.75em;
+            }
+            .vehicle-meta {
+                justify-content: space-between;
+                text-align: left;
+            }
+        }
+    }
+    #team2Vehicles {
+        .card-content {
+            .vehicle-type {
+                margin-left: 1em;
+                text-align: left;
+            }
+        }
+        .delayHolder, .respawnHolder, .ticketHolder {
+            justify-content: flex-end;
+        }
+    }
+}
+
+#factionInfo {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    margin: 0.5em 0 1em;
+    .teamInfo {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+    }
+    .characteristics:empty {
+        display: none;
+    }
+    .commanderAssets + .characteristics:not(:empty) {
+        border-left: 1px solid rgba(255, 255, 255, 0.35);
+        padding-left: 0.5em;
+    }
+    .commanderAssets,
+    .characteristics {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.35em;
+        img {
+            height: 26px;
+            margin: unset;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 5px;
+            padding: 3px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+            transition: transform 0.15s ease,
+                        box-shadow 0.15s ease,
+                        border-color 0.15s ease;
+
+            @media (hover: hover) {
+                height: 34px;
+                &:hover {
+                    background: rgba(0, 0, 0, 0.9);
+                    transform: scale(1.15);
+                    border-color: rgba(255, 255, 255, 0.5);
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+                }
+            }
+        }
+    }
+}

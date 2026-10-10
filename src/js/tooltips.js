@@ -1,0 +1,500 @@
+import tippy from "tippy.js";
+import "tippy.js/dist/tippy.css";
+import i18next from "i18next";
+import { App } from "../app.js";
+
+export var tooltip_save;
+export var tooltip_copied;
+
+
+const commonToolipsSettings = {
+    animation: "fade",
+    placement: "right",
+    offset: [0, 20],
+    allowHTML: true,
+    touch: false,
+    theme: "settingsTooltips",
+    hideOnClick: true,
+    delay: 200,
+    maxWidth: 250, 
+    appendTo: document.querySelector("#helpDialog"),
+};
+
+tippy("#settings", {
+    allowHTML: true,
+    animation: "fade",
+    placement: "bottom",
+    theme: "new",
+    trigger: "manual",
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:copied")}`);
+        setTimeout(() => {
+            tip.hide();
+            tip.disable();
+        }, 1500);
+    }
+});
+tooltip_copied = document.querySelector("#settings")._tippy;
+tooltip_copied.disable();
+
+tippy("span[data-i18n='settings:lowAndHigh']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:lowAndHighTooltip")}`);
+    },
+});
+
+tippy("span[data-i18n='settings:mapAnimationSettings']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:smoothMapTooltip")}`);
+    },
+});
+
+tippy("span[data-i18n='settings:showAnimations']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:targetAnimationTooltip")}`);
+    },
+});
+
+tippy("span[data-i18n='settings:weaponDrag']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:markerDragTooltip")}`);
+    },
+});
+
+tippy("span[data-i18n='settings:targetDrag']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:markerDragTooltip")}`);
+    },
+});
+
+
+tippy("span[data-i18n='settings:showKeypad']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:showKeypadTooltip")}`);
+    },
+});
+
+tippy("span[data-i18n='settings:useClassicCursor']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:useClassicCursorTooltip")}`);
+    },
+});
+
+tippy("span[data-i18n='settings:showSpread']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:showSpreadTooltip")}`);
+    },
+});
+
+tippy("span[data-i18n='settings:targetGrid']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:targetGridTooltip")}`);
+    },
+});
+
+tippy("span[data-i18n='settings:lineToTarget']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:lineToTargetTooltip")}`);
+    },
+});
+
+tippy("span[data-i18n='settings:realMaxRange']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`
+            ${i18next.t("tooltips:showMaxRangeTooltip")} <br><br>
+            <p class='perfWarning'>${i18next.t("tooltips:performanceWarning")}</p>
+        `);
+    },
+});
+
+// tippy("span[data-i18n='settings:copyNextFlags']", {
+//     ...commonToolipsSettings,
+//     onShow(tip) {
+//         tip.setContent(`
+//             ${i18next.t("tooltips:copyNextFlagsTooltip")}
+//         `);
+//     },
+// });
+
+tippy("span[data-i18n='settings:copyTarget']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`
+            ${i18next.t("tooltips:copyTargetTooltip")}
+        `);
+    },
+});
+
+tippy("span[data-i18n='settings:lastDigits']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`
+            ${i18next.t("tooltips:lastDigitsTooltip")}
+        `);
+    },
+});
+
+tippy("span[data-i18n='settings:capZoneOnHover']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`
+            ${i18next.t("tooltips:capZoneOnHoverTooltip")}
+        `);
+    },
+});
+
+tippy("span[data-i18n='settings:revealLayerOnHover']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`
+            ${i18next.t("tooltips:revealLayerOnHoverTooltip")}
+        `);
+    },
+});
+
+tippy("span[data-i18n='settings:showMainZones']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`
+            ${i18next.t("tooltips:showMainZonesTooltip")}
+        `);
+    },
+});
+
+tippy("span[data-i18n='settings:showMainAssets']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`
+            ${i18next.t("tooltips:showMainAssetsTooltip")}
+        `);
+    },
+});
+
+tippy("span[data-i18n='settings:enableFactions']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`
+            ${i18next.t("tooltips:enableFactionsTooltip")}
+        `);
+    },
+});
+
+tippy("span[data-i18n='settings:defaultFactions']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`
+            ${i18next.t("tooltips:defaultFactionsTooltip")}
+        `);
+    },
+});
+
+tippy("span[data-i18n='settings:hideLowRespawn']", {
+    ...commonToolipsSettings,
+    onShow(tip) {
+        tip.setContent(`
+            ${i18next.t("tooltips:hideLowRespawnTooltip")}
+        `);
+    },
+});
+
+
+
+tippy("#bearingNum", {
+    animation: "fade",
+    placement: "bottom",
+    allowHTML: true,
+    touch: false,
+    theme: "results",
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:bearing")}</br><span class=tooltipsubtext>${i18next.t("tooltips:whereToAim")}</span>`);
+    },
+});
+
+
+/* ******************* */
+/* Map Button tooltips */
+/* ******************* */
+
+const commonMapMenuToolipsSettings = {
+    animation: "fade",
+    allowHTML: true,
+    placement: "top",
+    touch: false,
+    theme: "menu",
+    delay: [500, 0],
+};
+
+tippy(".btn-basemap", {
+    ...commonMapMenuToolipsSettings,
+    onShow(tip) {
+        tip.setContent(
+            `
+            <div>${i18next.t("tooltips:basemode")}</div>
+            <div class="tooltipsubtext">${App.formatShortcutHTML(App.shortcuts.toggleMap)}</div>
+            `
+        );
+    },
+});
+tippy(".btn-terrainmap", {
+    ...commonMapMenuToolipsSettings,
+    onShow(tip) {
+        tip.setContent(
+            `
+            <div>${i18next.t("tooltips:terrainmode")}</div>
+            <div class="tooltipsubtext">${App.formatShortcutHTML(App.shortcuts.toggleMap)}</div>
+            `
+        );
+    },
+});
+tippy(".btn-topomap", {
+    ...commonMapMenuToolipsSettings,
+    onShow(tip) {
+        tip.setContent(
+            `
+            <div>${i18next.t("tooltips:topographicmode")}</div>
+            <div class="tooltipsubtext">${App.formatShortcutHTML(App.shortcuts.toggleMap)}</div>
+            `
+        );
+    },
+});
+tippy(".btn-layer", {
+    ...commonMapMenuToolipsSettings,
+    onShow(tip) {
+        tip.setContent(i18next.t("tooltips:toggleLayer"));
+    },
+});
+tippy(".btn-hd", {
+    ...commonMapMenuToolipsSettings,
+    placement: "left",
+    onShow(tip) {
+        const locked = tip.reference.classList.contains("locked");
+        tip.setContent(i18next.t(locked ? "tooltips:hdUnavailable" : "settings:highquality"));
+    },
+});
+export const layerInfoTooltips = tippy(".btn-layer-info", {
+    ...commonMapMenuToolipsSettings,
+    placement: "left",
+    onShow(tip) {
+        tip.setContent(i18next.t("tooltips:layerInfo"));
+    },
+})[0];
+export const threeDTooltips = tippy(".btn-3d", {
+    ...commonMapMenuToolipsSettings,
+    placement: "left",
+    onShow(tip) {
+        const locked = tip.reference.classList.contains("locked");
+        tip.setContent(i18next.t(locked ? "tooltips:view3DUnavailable" : "tooltips:view3D"));
+    },
+})[0];
+tippy(".btn-legacy", {
+    ...commonMapMenuToolipsSettings,
+    onShow(tip) {
+        tip.setContent(
+            `<div>${i18next.t("tooltips:legacyMode")}</div>
+            <div class="tooltipsubtext">CTRL+M</div>`
+        );
+    },
+});
+tippy(".returnBtn", {
+    ...commonMapMenuToolipsSettings,
+    placement: "left",
+    offset: [0, 15],
+    onShow(tip) {
+        tip.setContent(
+            `<div>${i18next.t("tooltips:returnToMap")}</div>
+            <div class="tooltipsubtext">CTRL+M</div>`
+        );
+    },
+});
+export const settingsTooltips = tippy(".btn-settings", {
+    ...commonMapMenuToolipsSettings,
+    placement: "left",
+    onShow(tip) {
+        tip.setContent(i18next.t("tooltips:settings"));
+    },
+})[0];
+tippy(".btn-helpmap", {
+    ...commonMapMenuToolipsSettings,
+    onShow(tip) {
+        tip.setContent(i18next.t("tooltips:helpmode"));
+    },
+});
+tippy(".btn-focus", {
+    ...commonMapMenuToolipsSettings,
+    onShow(tip) {
+        tip.setContent(
+            `
+            <div>${i18next.t("tooltips:focusMode")}</div>
+            <div class="tooltipsubtext">${App.formatShortcutHTML(App.shortcuts.focusMode)}</div>
+            `
+        );
+    },
+});
+
+export const serverBrowserTooltips = tippy("#servers", {
+    ...commonMapMenuToolipsSettings,
+    placement: "left",
+    onShow(tip) {
+        tip.setContent(i18next.t("tooltips:serverBrowser"));
+    },
+})[0];
+
+// export const activeServerBrowserTooltips = tippy("#servers", {
+//     ...commonMapMenuToolipsSettings,
+//     placement: "left",
+// })[0];
+// activeServerBrowserTooltips.disable();
+
+
+export const createSessionTooltips = tippy(".btn-session", {
+    ...commonMapMenuToolipsSettings,
+    placement: "left",
+    onShow(tip) {
+        tip.setContent(i18next.t("tooltips:createSession"));
+    },
+})[0];
+export const leaveSessionTooltips =  tippy(".btn-session", {
+    ...commonMapMenuToolipsSettings,
+    placement: "left",
+    onShow(tip) {
+        tip.setContent(i18next.t("tooltips:leaveSession"));
+    },
+})[0];
+leaveSessionTooltips.disable();
+
+tippy(".btn-undo", {
+    ...commonMapMenuToolipsSettings,
+    placement: "left",
+    onShow(tip) {
+        tip.setContent(
+            `
+            <div>${i18next.t("tooltips:undo")}</div>
+            <div class="tooltipsubtext">${App.formatShortcutHTML(App.shortcuts.deleteLastTarget)}</div>
+            `
+        );
+    },
+});
+
+tippy(".btn-download", {
+    ...commonMapMenuToolipsSettings,
+    onShow(tip) {
+        tip.setContent(
+            `
+            <div>${i18next.t("tooltips:download")}</div>
+            <div class="tooltipsubtext">${App.formatShortcutHTML(App.shortcuts.saveMap)}</div>
+            `
+        );
+    },
+});
+
+tippy(".btn-upload", {
+    ...commonMapMenuToolipsSettings,
+    onShow(tip) {
+        tip.setContent(
+            `
+            <div>${i18next.t("tooltips:upload")}</div>
+            `
+        );
+    },
+});
+
+tippy(".btn-delete", {
+    ...commonMapMenuToolipsSettings,
+    placement: "left",
+    onShow(tip) {
+        tip.setContent(
+            `
+            <div>${i18next.t("tooltips:deleteTargets")}</div>
+            <div class="tooltipsubtext">${App.formatShortcutHTML(App.shortcuts.clearTargets)}</div>
+            `
+        );
+    },
+});
+
+tippy(".btn-drawingMode", {
+    ...commonMapMenuToolipsSettings,
+    placement: "left",
+    onShow(tip) {
+        tip.setContent(
+            `
+            <div>${i18next.t("tooltips:quitDrawingMode")}</div>
+            <div class="tooltipsubtext">${i18next.t("tooltips:escape")}</div>
+            `
+        );
+    },
+});
+
+
+tippy("#elevationNum", {
+    animation: "fade",
+    placement: "bottom",
+    allowHTML: true,
+    touch: false,
+    theme: "results",
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:elevation")}</br><span class=tooltipsubtext>${i18next.t("tooltips:howFar")}</span>`);
+    },
+});
+
+tippy("#savebutton svg", {
+    animation: "fade",
+    allowHTML: true,
+    interactiveDebounce: 75,
+    placement: "bottom",
+    theme: "results",
+    touch: false,
+    onShow(tip) {
+        tip.setContent(`${i18next.t("tooltips:save")}</br><span class=tooltipsubtext> ${i18next.t("tooltips:resultLater")}</span>`);
+    },
+});
+tooltip_save = document.querySelector("#savebutton svg")._tippy;
+
+
+const targetDialog = document.getElementById("calcInformation");
+tippy(".infSpreadTooltip", {
+    animation: "fade",
+    placement: "top",
+    touch: false,
+    appendTo: targetDialog,
+    theme: "infTooltips",
+    delay: [500, 0],
+    onShow(tip) {
+        tip.setContent(i18next.t("tooltips:spreadDesc"));
+    },
+});
+
+const weaponDialog = document.getElementById("weaponInformation");
+tippy(".infMOATooltip", {
+    animation: "fade",
+    placement: "top",
+    touch: false,
+    appendTo: weaponDialog,
+    theme: "infTooltips",
+    delay: [500, 0],
+    onShow(tip) {
+        tip.setContent(i18next.t("tooltips:moaDesc"));
+    },
+});
+
+tippy(".infVelocityTooltip", {
+    animation: "fade",
+    placement: "top",
+    touch: false,
+    appendTo: weaponDialog,
+    theme: "infTooltips",
+    delay: [500, 0],
+    onShow(tip) {
+        tip.setContent(i18next.t("tooltips:velocityDesc"));
+    },
+});

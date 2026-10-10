@@ -1,0 +1,191 @@
+/* 图层速查（缩略图选择器） */
+#layerFinder {
+    width: min(1180px, 94vw);
+    max-height: 88vh;
+
+    .lf-title {
+        margin: 0 0 2px;
+    }
+
+    .lf-hint {
+        margin: 0 0 10px;
+        font-size: 12px;
+        opacity: 0.65;
+    }
+
+    .lf-searchRow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .lf-search {
+        flex: 1;
+        padding: 7px 10px;
+        border: 1px solid var(--global-border, #3a3f47);
+        border-radius: 4px;
+        background: var(--global-bg-alt, #1b1e23);
+        color: inherit;
+        font-size: 13px;
+    }
+
+    .lf-total {
+        font-size: 11px;
+        opacity: 0.6;
+        white-space: nowrap;
+    }
+
+    .lf-scroll {
+        overflow-y: auto;
+        max-height: 62vh;
+        padding-right: 4px;
+    }
+
+    /* 地图缩略图条 */
+    .lf-mapStrip {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        /* 预留滚动条高度，否则滚动条会压住下方地图名 */
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--global-border, #3a3f47);
+        margin-bottom: 10px;
+    }
+
+    .lf-map {
+        flex: 0 0 auto;
+        width: 136px;
+        padding: 0;
+        border: 2px solid transparent;
+        border-radius: 4px;
+        background: var(--global-bg-alt, #1b1e23);
+        cursor: pointer;
+        overflow: hidden;
+        transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .lf-map img {
+        width: 100%;
+        height: 76px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .lf-map span {
+        display: block;
+        padding: 5px 6px;
+        font-size: 11px;
+        line-height: 1.3;
+        /* 名称换行显示，避免被截断/遮挡 */
+        white-space: normal;
+        overflow-wrap: anywhere;
+        min-height: 2.6em;
+    }
+
+    .lf-map span i {
+        display: block;
+        font-style: normal;
+        font-size: 9.5px;
+        opacity: 0.55;
+        margin-top: 2px;
+    }
+
+    .lf-map:hover {
+        border-color: var(--global-accent, #f0a84b);
+        transform: translateY(-1px);
+    }
+
+    .lf-map.is-active {
+        border-color: var(--global-accent, #f0a84b);
+    }
+
+    .lf-layersHead {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        opacity: 0.75;
+        margin-bottom: 6px;
+    }
+
+    /* 图层缩略图墙 */
+    .lf-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+        gap: 8px;
+    }
+
+    .lf-layer {
+        padding: 0;
+        border: 1px solid var(--global-border, #3a3f47);
+        border-radius: 4px;
+        background: var(--global-bg-alt, #1b1e23);
+        cursor: pointer;
+        overflow: hidden;
+        text-align: left;
+        transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .lf-layer img {
+        width: 100%;
+        height: 84px;
+        object-fit: cover;
+        display: block;
+        background: #0d0f12;
+    }
+
+    .lf-layer span {
+        display: block;
+        padding: 4px 6px;
+        font-size: 11px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .lf-layer:hover {
+        border-color: var(--global-accent, #f0a84b);
+        transform: translateY(-1px);
+    }
+
+    .lf-empty,
+    .lf-loading {
+        grid-column: 1 / -1;
+        padding: 24px;
+        text-align: center;
+        font-size: 12px;
+        opacity: 0.6;
+    }
+
+    .lf-loading {
+        display: none;
+    }
+}
+
+/* 顶部图层下拉右侧的入口按钮 */
+#layerSelector .layerFinderBtn {
+    position: absolute;
+    top: 50%;
+    right: 26px;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    opacity: 0.6;
+    cursor: pointer;
+    z-index: 3;
+}
+
+#layerSelector .layerFinderBtn:hover {
+    opacity: 1;
+}
+
+#layerSelector .layerFinderBtn svg {
+    width: 15px;
+    height: 15px;
+    fill: currentColor;
+    display: block;
+}

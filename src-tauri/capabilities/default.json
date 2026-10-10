@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "SquadCalc 桌面版默认权限（纯静态页面，无需额外权限）",
+  "windows": ["main"],
+  "permissions": ["core:default", "core:event:default"]
+}

@@ -1,0 +1,590 @@
+@use "../shared/variables";
+
+:root {
+    --font-size-objtext: 1em;
+    --font-size-calc-popup: 0.9em;
+}
+
+.circles {
+    pointer-events: none!important;
+}
+
+.leaflet-pane.leaflet-ie10-visual-click-pane-pane { z-index: 300; }
+
+.tippy-box {
+    cursor: auto;
+    pointer-events: auto !important;
+}
+
+.hexagon-shape {
+    cursor: pointer!important;
+    transition: fill-opacity 0.15s ease, stroke-opacity 0.15s ease;
+}
+
+.hexagon-shape.hovered {
+    fill-opacity: 0.8;
+}
+
+.hexagon-shape.faded-out {
+    fill-opacity: 0;
+    stroke-opacity: 0;
+}
+
+@mixin popup-base-styles {
+    background: transparent;
+    pointer-events: none;
+    .leaflet-popup-tip,
+    .leaflet-popup-content-wrapper {
+        @include variables.text-outline;
+        @extend .unselectable;
+        font-family: variables.$mainFont, Times, "Times New Roman", serif;  
+        font-size: calc(var(--font-size-objtext) + 0.1em);
+        background: transparent;
+        box-shadow: none;
+        color: variables.$mainTxtColor;
+        height: 2em;
+        padding: 0;
+        text-align: center;
+        pointer-events: none;
+    }
+    &.leaflet-popup {
+        transition: none;
+    }
+}
+
+
+.map-crosshair #map {
+    cursor: crosshair;
+}
+
+#map {
+    cursor: default;
+}
+
+#map_ui {
+    position: relative;
+    height: 100dvh;
+    width: 100dvw;
+    #map {
+        height: 100dvh;
+        width: 100dvw;
+        background: var(--themecolor, variables.$mainBGColor);
+        z-index: 0;
+        .leaflet-interactive {
+            cursor: inherit;
+            &.mapArrow, &.mapRectangle, &.mapCircle {
+                cursor: pointer;
+            }
+        }
+        .leaflet-pane .leaflet-marker-pane .leaflet-marker-icon {
+            cursor: grab;
+            &:active {
+                cursor: grabbing;
+            }
+        }
+        .subkp {
+            font-size: 0.65em;
+            letter-spacing: 0.05em;
+        }
+        .kpPopup, .posPopUpTarget, .posPopUpWeapon {
+            @include popup-base-styles;
+        }
+        .calcPopup, .calcPopup2 {
+            @include variables.text-outline;
+            @extend .unselectable;
+            margin: 0;
+            padding: 0;
+            font-family: variables.$mainFont, Times, "Times New Roman", serif;
+            pointer-events: none;
+            font-size: var(--font-size-calc-popup);
+            height: 45px;
+            .bearingUiCalc {
+                font-size: 0.7em;
+            }
+            .leaflet-popup-tip,
+            .leaflet-popup-content-wrapper {
+                pointer-events: none;
+                background: transparent;
+                box-shadow: none;
+                color: variables.$mainTxtColor;
+            }
+            .leaflet-popup-content {
+                margin: 0;
+                line-height: 1;
+            }
+            &.calcPopup {
+                .leaflet-popup-content-wrapper {
+                    text-align: right;
+                }
+            }
+            &.calcPopup2 {
+                .leaflet-popup-content-wrapper {
+                    text-align: left;
+                }
+            }
+        }
+        .animatedWeaponMarker {
+            animation: weapon-appear 0.25s ease-in-out forwards 0s;
+        }
+        .animatedTargetMarker {
+            animation: target-appear 0.25s ease-in-out forwards 0s;
+        }
+        .gridText {
+            @include variables.light-text-outline;
+            font-family: variables.$logoFont, Times, "Times New Roman", serif;
+            font-size: 1.1em;
+
+            @include variables.theme-font(variables.$logoFont, null);
+        }
+        .deployables {
+            background-size: contain;
+            transition: opacity 0.1s ease-in;
+        }
+        .unplayable-area {
+            transition: fill-opacity 0.2s ease-in;
+        }
+        .destructionPhase {
+            @include variables.light-text-outline;
+            font-size: 2em;
+            text-align: center;
+            font-family: variables.$mainFont, Times, "Times New Roman", serif;
+        }
+        .hexNumber {
+            @include variables.light-text-outline;
+            font-size: var(--font-size-objtext);
+            text-align: center;
+            font-family: variables.$mainFont, Times, "Times New Roman", serif;
+        }
+        .capZone {
+            transition: opacity 0.25s ease-in-out, fill-opacity 0.25s ease-in-out;
+        }
+        .leaflet-measure-path-measurement {
+            @include variables.light-text-outline;
+            font-family: variables.$mainFont, Times, "Times New Roman", serif;
+            position: absolute;
+            font-size: var(--font-size-objtext);
+            color: white;
+            white-space: nowrap;
+            transform-origin: 0;
+            & > div {
+                position: relative;
+                margin-top: -25%;
+                left: -50%;
+                pointer-events: none;
+            }
+        }
+        .leaflet-measure-path-measurement 
+        .leaflet-visualclick-icon {
+            border-radius: 10%;
+            pointer-events: none;
+            &::after {
+                content: "";
+                border-radius: 100%;
+                height: 50px;
+                width: 50px;
+                margin-left: -25px;
+                margin-top: -25px;
+                position: absolute;
+                pointer-events: none;
+                animation: visualclick-pulsate 0.5s ease-out;
+                animation-iteration-count: 1;
+                animation-delay: 0s;
+                opacity: 0;
+            }
+            &.white::after {
+                box-shadow: inset 0 0 25px 5px #E1E3E4, 0 0 10px -1px #C5C5C5;
+            }
+            &.cyan::after {
+                box-shadow: inset 0 0 25px 5px #1960b1, 0 0 10px -1px #11447e;
+            }
+        }
+        .leaflet-pane.leaflet-ie10-visual-click-pane-pane { 
+            z-index: 300; 
+        }
+        .leaflet-visualclick-icon-touch {
+            &::after {
+                content: "";
+                border-radius: 100%;
+                height: 50px;
+                width: 50px;
+                margin-left: -25px;
+                margin-top: -25px;
+                position: absolute;
+                pointer-events: none;
+                animation: visualclick-pulsate-touch 0.5s ease-out;
+                animation-iteration-count: 1;
+                animation-delay: 0s;
+                opacity: 0;
+            }
+            &.white::after {
+                box-shadow: inset 0 0 25px 5px #E1E3E4, 0 0 10px -1px #C5C5C5;
+            }
+            &.cyan::after {
+                box-shadow: inset 0 0 25px -1px #1960b1, 0 0 10px -1px #11447e;
+            }
+        }
+    }
+    // 3D view open: the 2D map itself becomes the 3D minimap, pinned bottom-right above
+    // #threeDView (z-index 3). It takes the pointer (for hover and flag clicks), but its
+    // background clicks/drags/wheel are blocked in JS - see
+    // Squad3DSimulation._attachLeafletMinimap() / _blockMinimapBackgroundEvent().
+    #map.threeDMinimapMode {
+        position: fixed !important; // Leaflet sets an inline position: relative on init
+        right: 1em;
+        bottom: 1em;
+        // Scale with the screen's smaller side: ~120px on phones, capped at 280px on desktop
+        width: clamp(110px, 30vmin, 280px);
+        height: clamp(110px, 30vmin, 280px);
+        z-index: 4;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-radius: 6px;
+        overflow: hidden;
+        cursor: default;
+        // Grows x2 from its bottom-right corner while hovered - the enlarged box still
+        // contains the original one, so the cursor never drops out of it mid-grow.
+        transform-origin: bottom right;
+        transition: transform 0.15s ease-out;
+
+        @media (hover: hover) {
+            // Also while its right-click context menu is open: that tippy lives outside
+            // #map, so moving onto it ends :hover and would shrink the map from under it.
+            &:hover,
+            body:has(.tippy-box[data-theme~="contextmenu"]) & { transform: scale(2.5); }
+        }
+        &.threeDMinimapHidden { visibility: hidden; }
+
+        // Weapon/FOB/HAB range circles: their 2-4px weights are too heavy at minimap size
+        .leaflet-overlay-pane path.circles { stroke-width: 1px; }
+
+        // Popups, and the flag-to-flag distance labels (leaflet-measure-path) - clutter here.
+        .leaflet-popup-pane, #dropOverlay, .leaflet-measure-path-measurement { display: none; }
+        .threeDMinimapCamera, .threeDMinimapClickMarker {
+            img {
+                position: absolute;
+                width: clamp(14px, 2.4vmin, 22px);
+                height: clamp(14px, 2.4vmin, 22px);
+                filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.9));
+                transform: translate(-50%, -50%);
+            }
+        }
+        .threeDMinimapCamera { z-index: 1000 !important; } // above every 2D marker
+
+        // Circle flags shrink here in whole pixels rather than through the transform scale
+        // every other marker gets (patchMinimapMarkerScaling() skips them): scaled by a
+        // fractional factor, their outline and background were pixel-snapped apart.
+        // Doubled class for specificity over mapObjectives.scss's per-state rules.
+        .leaflet-marker-pane .flag.circleFlag.circleFlag {
+            width: 16px !important;
+            height: 16px !important;
+            margin-left: -8px !important;
+            margin-top: -8px !important;
+            border-radius: 8px;
+            outline-width: 1px !important;
+            font-size: 0.7em !important;
+        }
+    }
+    .hexagon-shape {
+        cursor: pointer!important;
+        transition: fill-opacity 0.15s ease, stroke-opacity 0.15s ease;
+        .hovered {
+            fill-opacity: 0.8;
+        }
+        .faded-out {
+            fill-opacity: 0;
+            stroke-opacity: 0;
+        }
+    }
+}
+
+#dropOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: variables.$mainTxtColor;
+    font-size: 3rem;
+    font-weight: bold;
+    font-family: variables.$logoFont, Times, "Times New Roman", serif;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    .dropOverlayInner {
+        border: dashed 15px variables.$mainColor;
+        padding: 1em;
+        .dropSubTxt {
+            font-size: 0.5em;
+            font-style: italic;
+        }
+    }
+}
+
+@keyframes visualclick-pulsate {
+    0% {
+        transform: scale(0.2);
+        opacity: 1;
+    }
+    30% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+
+@keyframes visualclick-pulsate-touch {
+    from {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    to {
+        transform: scale(0.2);
+        opacity: 0.0;
+    }
+}
+
+
+/***************************************
+************   TOAST   ***************
+**************************************/
+
+$toastDistanceFromBottom: 80px;
+
+#toast {
+    // Always default font, even with the seasonal theme font on
+    --main-font: montserrat;
+    font-family: montserrat, Times, "Times New Roman", serif;
+    font-synthesis: initial;
+    display: flex;
+    align-items: center;
+    max-width: 400px;
+    width: fit-content;
+    padding: 10px 14px;
+    position: fixed;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(20, 20, 24, 0.82);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    z-index: 5;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+    visibility: hidden;
+}
+
+#icon-wrapper {
+    width: 30px;
+    height: 30px;
+    background: var(--secondary);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+#icon {
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    border-radius: 50%;
+    position: relative;
+}
+
+#icon::before, #icon::after {
+    position: absolute;
+    content: "";
+    background: variables.$mainBGColor; // glyph cut out of the colored disc
+    border-radius: 5px;
+    top: 50%;
+    left: 50%;
+}
+
+#toast-message {
+    padding: 5px 20px 5px 10px;
+}
+
+#toast-message h4, #toast-message p {
+    margin: 0;
+    line-height: 1.2em;
+}
+
+#toast-message h4 {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    color: variables.$mainTxtColor;
+}
+
+#toast-message p {
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .05em;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+#toast-close {
+    position: relative;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: rgba(0,0,0,0);
+    transition: background 0.2s ease-in-out;
+}
+
+#toast-close:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+#toast-close::before, #toast-close::after {
+    position: absolute;
+    content: '';
+    height: 12px;
+    width: 1px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.6);
+    top: 50%;
+    left: 50%;
+    transition: background 0.2s ease-in-out;
+}
+
+#toast-close:hover::before, #toast-close:hover::after {
+    background: variables.$mainTxtColor;
+}
+
+#toast-close::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+#toast-close::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+@keyframes close {
+    from {
+        bottom: $toastDistanceFromBottom;
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+        visibility: visible;
+    }
+    to {
+        bottom: 0;
+        opacity: 0;
+        transform: translateX(-50%) scale(0.5);
+        visibility: hidden;
+    }
+}
+
+@keyframes open {
+    from {
+        bottom: 0;
+        opacity: 0;
+        transform: translateX(-50%) scale(0.5);
+        visibility: hidden;
+    }
+    to {
+        bottom: $toastDistanceFromBottom;
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+        visibility: visible;
+    }
+}
+
+#timer {
+    width: 0%;
+    height: 4px;
+    background: var(--primary);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-top-right-radius: 5px;
+    box-shadow: 0 0 8px var(--primary);
+}
+
+.timer-animation {
+    animation: countdown 5s linear forwards;
+}
+
+@keyframes countdown {
+    from { 
+        width: 100%; 
+    }
+    to { 
+        width: 0%; 
+    }
+}
+
+.success {
+    --primary: #2DD743;
+    --secondary: rgba(45, 215, 67, 0.15);
+    #icon { 
+        transform: rotate(-45deg); 
+    }
+    #icon::before {
+        width: 10px;
+        height: 3px;
+        transform: translate(calc(-50% + 1px), calc(-50% + 1px));
+    }
+    #icon::after {
+        width: 3px;
+        height: 6px;
+        transform: translate(calc(-50% - 3px), calc(-50% - 1px));
+    }
+}
+
+
+.warning {
+    --primary: #F29208;
+    --secondary: rgba(242, 146, 8, 0.15);
+    #icon::before {
+        width: 3px;
+        height: 3px;
+        transform: translate(-50%, calc(-50% + 4px));
+    }
+    #icon::after {
+        width: 3px;
+        height: 7px;
+        transform: translate(-50%, calc(-50% - 2px));
+    }
+}
+
+.error {
+    --primary: #E63435;
+    --secondary: rgba(230, 52, 53, 0.15);
+    #icon::before {
+        width: 3px;
+        height: 3px;
+        transform: translate(-50%, calc(-50% + 4px));
+    }
+    #icon::after {
+        width: 3px;
+        height: 7px;
+        transform: translate(-50%, calc(-50% - 2px));
+    }
+}
+
+
+.info {
+    --primary: #42C0F2;
+    --secondary: rgba(66, 192, 242, 0.15);
+    #icon::before {
+        width: 3px;
+        height: 7px;
+        transform: translate(-50%, calc(-50% + 2px));
+    }
+    #icon::after {
+        width: 3px;
+        height: 3px;
+        transform: translate(-50%, calc(-50% - 4px));
+    }
+}

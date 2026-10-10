@@ -1,0 +1,47 @@
+<dialog id="threeDFilesDialog" class="animate__animated animate__zoomIn">
+    <form method="dialog">
+        <button class="closeModal">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"/></svg>
+        </button>
+    </form>
+
+    <h2 class="tdf-title" data-i18n="common:tdfTitle">3D 资源</h2>
+    <p class="tdf-hint" data-i18n="common:tdfHint">按地图按需下载 3D 场景，可随时删除释放空间</p>
+
+    <div class="tdf-dirRow">
+        <input type="text" id="tdfRoot" class="tdf-root" spellcheck="false" autocomplete="off" />
+        <button type="button" class="tdf-btn tdf-save" id="tdfSaveRoot" data-i18n="common:tdfSaveDir">使用此目录</button>
+        <span class="tdf-total" id="tdfTotal"></span>
+    </div>
+
+    <div class="tdf-filterRow">
+        <label class="tdf-only">
+            <input type="checkbox" id="tdfOnlyDownloaded" />
+            <span data-i18n="common:tdfOnlyDownloaded">只看已下载</span>
+        </label>
+        <button type="button" class="tdf-btn" id="tdfRefresh" data-i18n="common:tdfRefresh">刷新</button>
+        <span class="tdf-summary" id="tdfSummary"></span>
+    </div>
+
+    <div id="tdfList" class="tdf-list"></div>
+
+    <div class="tdf-footRow">
+        <span class="tdf-status" id="tdfStatus"></span>
+        <span class="tdf-footSpacer"></span>
+        <button type="button" class="tdf-link" id="tdfDownloadAll" data-i18n="common:tdfDownloadAll">下载全部</button>
+        <button type="button" class="tdf-link tdf-link-danger" id="tdfClearAll" data-i18n="common:tdfClearAll">清理全部</button>
+    </div>
+</dialog>
+
+<dialog id="tdfPrompt" class="animate__animated animate__zoomIn">
+    <h3 class="tdf-promptTitle" data-i18n="common:tdfPromptTitle">该地图缺少 3D 场景资源</h3>
+    <p class="tdf-promptHint" data-i18n="common:tdfPromptHint">下载后可见建筑与植被等 3D 细节；不下载也能打开，但只有地形。</p>
+    <div class="tdf-promptInfo" id="tdfPromptText"></div>
+    <span class="tdf-bar" id="tdfPromptBar" style="display:none"><i style="width:0%"></i></span>
+    <div class="tdf-promptMsg" id="tdfPromptMsg"></div>
+    <div class="tdf-actions">
+        <button type="button" class="tdf-btn tdf-primary" id="tdfPromptGo" data-i18n="common:tdfDownload">下载</button>
+        <button type="button" class="tdf-btn" id="tdfPromptSkip" data-i18n="common:tdfSkipOnce">暂不下载，直接打开</button>
+        <button type="button" class="tdf-btn" id="tdfPromptCancel" data-i18n="common:tdfCancel">取消</button>
+    </div>
+</dialog>

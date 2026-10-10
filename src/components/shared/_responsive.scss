@@ -1,0 +1,562 @@
+/***************************************************
+ ************   HEIGHT ADJUSTMENTS   ***************
+ ***************************************************/
+
+ @use '../shared/variables';
+
+/* -- L*568px -- */
+
+@media (height >= 35em) {
+    header {
+        .mapSelector #mapSelector {
+            .select2-results__options {
+                max-height: 470px;
+            }
+        }
+        .mapSelector #layerSelector {
+            .select2-results__options {
+                max-height: 350px;
+            }
+        }
+        .weaponSelector #weaponSelector {
+            .select2-results__options {
+                max-height: 450px;
+            }
+        }
+    }
+}
+
+
+/* -- L*730px -- */
+
+@media (height >= 45em) {
+    header {
+        .mapSelector #mapSelector {
+            .select2-results__options {
+                // line-height: 0.85em;
+                max-height: 770px;
+            }
+        }
+        .mapSelector #layerSelector {
+            .select2-results__options {
+                max-height: 600px;
+            }
+        }
+        .weaponSelector #weaponSelector {
+            .select2-results__options {
+                max-height: 650px;
+            }
+        }
+    }
+}
+
+
+/* -- L*800px -- */
+
+@media (height >= 50em) {
+    header {
+        .mapSelector #mapSelector {
+            .select2-results__options {
+                max-height: 650px;
+            }
+        }
+        .mapSelector #layerSelector {
+            .select2-results__options {
+                max-height: 650px;
+            }
+        }
+    }
+}
+
+
+/***************************************************
+   ************   WIDTH ADJUSTMENTS  ***************
+   ***************************************************/
+
+@media screen and (width <= 48em) {
+.unit-logo {
+        display: none;
+    }
+    .respawnText, .delayText, .ticketText {
+        display: none;
+    }
+    .countryFlags {
+        .img-flag {
+            width: 40px;
+        }
+    }
+    #factionsDialog #factionVehicles .vehicle-card .image {
+        .tags, .links {
+            .tag {
+                width: 3em!important;
+                height: 3em!important;
+                .passenger {
+                    font-size: 11px!important;
+                    margin-left: 10px!important;
+                }
+            }
+        }
+        .links {
+            .wiki-link > span { font-size: 1em!important; }
+            .armor-link > span { font-size: 0.7em!important; }
+        }
+    }
+    #commanderAssets .commanderAssets img {
+        height: 35px;
+    }
+    dialog#layerInformation {
+        .layerThumbnail {
+            width: 170px;
+        }
+        .layerCommandRow {
+            input {
+                padding: 0.6em 2.8em 0.6em 0.7em;
+            }
+            .layerCommandCopyBtn {
+                width: 2.4em;
+                height: 2.4em;
+            }
+        }
+    }
+    #modsPanelContainer {
+        gap: 0.7em;
+        .modToggleTile {
+            min-height: 6em;
+            padding: 1.1em 1.3em;
+            .modTileLogo {
+                width: 6em;
+            }
+            .modTileName {
+                padding-right: 5.7em;
+            }
+        }
+    }
+    #characteristics .characteristics img {
+        height: 30px;
+    }
+    #factionsDialog {
+        #factionVehicles {
+            .card-content {
+                .vehicle-icon {
+                    width: 40px;
+                    height: 40px;
+                    flex-shrink: 0;
+                }
+                .vehicle-type {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    min-width: 0;
+                    flex: 1;
+                }
+                .vehicle-info {
+                    min-width: 0;
+                }
+                .vehicle-meta {
+                    flex-shrink: 0;
+                }
+            }
+        }
+        .select2-container {
+            min-width: 100px;
+            max-width: 175px;
+            padding-bottom: 0.1em;
+            .select2-selection--single {
+                height: 24px;
+            }
+            .unit-option .unit-type {
+                font-size: 1.5em;
+            }
+             .unit-option .unit-name {
+                font-size: 1.4em;
+            }
+        }
+        #factionMenu {
+            font-size: 0.8em;
+            #team1, #team2 {
+                .selectors {
+                    flex-direction: column;
+                    font-size: 0.9em;
+                    .unitSelector {
+                        min-width: 100px;
+                        padding-top: 5px;
+                    }
+                }
+            }
+            #team2 .selectors {
+                flex-direction: column-reverse;
+            }
+        }
+    }
+
+    /* -- H < 568px -- */
+    @media (height >= 35em) {
+        #classic_ui {
+            input {
+                height: 40px;
+            }
+            #saved {
+                font-size: 0.65em;
+            }
+            .results {
+                margin: 1.5em auto;
+            }
+        }
+
+
+    }
+    /* -- H < 800px -- */
+    @media (height >= 50em) {
+        #classic_ui {
+            padding-top: 1em;
+            .results {
+                font-size: 1.7em;
+                margin: 2em auto;
+            }
+            #saved {
+                font-size: 0.8em;
+            }
+        }
+    }
+    #helpDialog, #changelogDialog, #layerInformation {
+        width: 100vw;
+        height: 100dvh;
+        max-width: 100%;
+        max-height: 100%;
+        margin: 0;
+        border-radius: 0;
+    }
+}
+
+/* -- WIDTH < 768px -- */
+@media screen and (width <= 48em) {
+    .pinnedVehicles {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+}
+
+/* -- WIDTH < 568px -- */
+@media screen and (width <= 35em) {
+    #factionsDialog #factionVehicles {
+        .card-content {
+            padding: 0.3em;
+            .vehicle-icon {
+                width: 30px;
+                height: 30px;
+                margin-right: 0.5em;
+            }
+            .vehicle-info {
+                font-size: 0.8em;
+            }
+            .vehicle-icon:has(img) {
+                display: none;
+            }
+        }
+        #team1Vehicles {
+            .card-content {
+                .vehicle-icon {
+                    margin-left: 0.5em;
+                }
+            }
+        }
+        
+    }
+}
+
+/* ≥ 768px */
+
+@media screen and (width >= 48em) {
+    /* On big screen, fix map&weapon Selectors on top corners */
+    header {
+        .weaponSelector {
+            // fix to top left corner
+            left: 1em;
+            position: fixed;
+            width: auto;
+            .select2-container {
+                float: left;
+                font-size: 1em;
+            }
+            #ammoSelector {
+                padding-top: 3em;
+            }
+        }
+        .mapSelector {
+            // fix to top right corner
+            position: fixed;
+            right: 1em;
+            top: 0;
+            margin-top: 0;
+            width: auto;
+            .select2-container {
+                float: right;
+                font-size: 1em;
+                padding-bottom: 0.3em;
+            }
+            #serverSelector {
+                padding-bottom: 3em;
+                .select2-container {
+                    max-width: 250px;
+                }
+            }
+            #layerSelector {
+                padding-top: 3em;
+            }
+        }
+    }
+    #loader, #background {
+        span {
+            span {
+                display: inline-block;
+            }
+            .logoSkull {
+                vertical-align: middle;
+            }
+            span:nth-child(3) {
+                width: auto;
+            }
+        }
+    }
+    #classic_ui {
+        padding-top: 3em;
+        .coord {
+            img {
+                height: 45px;
+            }
+        }
+    }
+    #factionsDialog #factionVehicles .vehicle-card.selected .image a {
+        font-size: 1em;
+    }
+
+    @media (height >= 40em) {
+        #mapLayerMenu{
+            right: 2%;
+            .btn {
+                font-size: 1.4em;
+                width: 44px;
+                height: 44px;
+            }
+            #sessionActions {
+                width: 44px;
+            }
+            .mapLayerMenuSeparator {
+                margin-top: 20px;
+            }
+        }
+    }
+
+    /* -- L*560px -- */
+    @media (height >= 35em) {
+        #classic_ui {
+            font-size: 25px;
+            padding-top: 5em;
+            input {
+                height: 60px;
+            }
+        }
+    }
+    /* -- L*730px -- */
+    @media (height >= 45em) {
+        #classic_ui {
+            padding-top: 5em;
+            input {
+                height: 70px;
+            }
+        }
+    }
+    /* -- L*800px -- */
+    @media (height >= 50em) {
+        #classic_ui {
+            font-size: 30px;
+        }
+    }
+}
+
+
+/* < 992px: layerInformation's two tables wrap into a vertical stack instead of
+   sitting side by side, so kill the bottom margin between them. Horizontal
+   side margins are untouched, and the >= 992px side-by-side layout below
+   still sets its own margin. */
+@media screen and (width < 62em) {
+    dialog#layerInformation table:first-of-type {
+        margin-bottom: 0;
+    }
+}
+
+/* ≥ 992px */
+
+@media screen and (width >= 62em) {
+    header {
+        .select2-container {
+            font-size: 1em;
+            min-width: 250px;
+        }
+    }
+    dialog, #threeDView {
+        font-size: 0.7em;
+        table {
+            width: 44%;
+            margin: 0 3% 2em;
+        }
+        &#weaponInformation {
+            max-width: 600px;
+        }
+        &#layerInformation {
+            max-width: 800px;
+        }
+        &#helpDialog {
+            font-size: 0.7em;
+            width: 600px;
+            table {
+               width: 90%;
+            }
+        }
+    }
+}
+
+
+/* ≥ 1200px */
+
+@media screen and (width >= 62em) {
+    header {
+        .select2-container {
+            max-width: 250px;
+        }
+    }
+}
+
+
+/* ≥ 1400px */
+
+@media screen and (width >= 87.5em) {
+    header {
+        // Match base rules specificity in header.scss so these actually apply
+        .weaponSelector .select2-results__options,
+        .mapSelector #mapSelector .select2-results__options,
+        .mapSelector #layerSelector .select2-results__options {
+            font-size: 0.9em;
+        }
+    }
+}
+
+
+/* ≥ 1920px */
+
+@media screen and (width >= 124em) {
+    /* ≥ 1920px & 1080 */
+    @media (height >= 68em) {
+        header {
+            .weaponSelector {
+                padding: 2em 0 0 1.5em;
+                #ammoSelector {
+                    padding-top: 5em;
+                }
+            }
+            .mapSelector {
+                padding: 2em 1.5em 0 0;
+                #serverSelector {
+                    padding-bottom: 5em;
+                    .select2-container {
+                        min-width: 300px;
+                        max-width: 300px;
+                        padding-bottom: 1em;
+                        font-size: 1.25em;
+                    }
+                    .select2-selection__placeholder {
+                        font-size: 1.05em;
+                    }
+                    .select2-selection__rendered {
+                        font-size: 1.1em;
+                    }
+                }
+                #layerSelector {
+                    padding-top: 5em;
+                }
+            }
+            // .mapSelector prefix needed to outweigh base rules in header.scss
+            #weaponSelector,
+            #ammoSelector,
+            .mapSelector #mapSelector,
+            .mapSelector #layerSelector {
+                .select2-container {
+                    min-width: 300px;
+                    max-width: 300px;
+                    padding-bottom: 1em;
+                    font-size: 1.25em;
+                }
+                .select2-results__options {
+                    font-size: 0.9em;
+                    // line-height: 1.3em;
+                    max-height: 1250px;
+                }
+                .select2-selection__placeholder {
+                    font-size: 1.05em;
+                }
+                .select2-selection__rendered {
+                    font-size: 1.1em;
+                }
+            }
+            .mapSelector #layerSelector .select2-results__options {
+                max-height: 1000px;
+            }
+        }
+        #classic_ui {
+            padding-top: 7em;
+            input {
+                font-size: 1.7em;
+                height: 100px;
+            }
+            #results {
+                font-size: 1.5em;
+            }
+            #saved {
+                font-size: 1em;
+            }
+            .coord img {
+                height: 75px;
+            }
+        }
+        #mapLayerMenu {
+            top: 26%;
+            .btn {
+                font-size: 1.6em;
+                width: 50px;
+                height: 50px;
+            }
+            #sessionActions {
+                width: 50px;
+            }
+        }
+        #factionsButton button.btn-faction {
+            font-size: 0.95em;
+            .factionBarFlag {
+                width: 56px;
+            }
+            .factionBarUnit {
+                width: 40px;
+                height: 40px;
+                img {
+                    min-width: 40px;
+                    width: 40px;
+                    height: 40px;
+                }
+            }
+        }
+        .tippy-box {
+            font-size: 200%;
+        }
+    }
+}
+
+/* Fix for mobile devices - prevent hover states from sticking on specific elements */
+@media (hover: none) {
+    // Settings controls buttons
+    #settingsControls button:not(.active):hover {
+        background-color: inherit !important;
+    }
+    // Dialog close buttons
+    .closeModal:hover {
+        background-color: inherit !important;
+    }
+}

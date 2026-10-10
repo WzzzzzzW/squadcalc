@@ -1,0 +1,79 @@
+<div id="classic_ui" class="pure-g">
+    <div class="pure-u-2-24 pure-u-md-1-8 pure-u-lg-1-5 pure-u-xxl-7-24"></div>
+    <div class="pure-u-20-24 pure-u-md-3-4 pure-u-lg-3-5 pure-u-xxl-10-24">
+        <div class="pure-g">
+
+            <div class="pure-u-1 pure-u-md-11-24">
+                <div class="pure-g">
+                    <div class="pure-u-1-5 pure-u-md-6-24"><span tabindex="1" onFocus="document.querySelector('.autofocus11').focus()"></span></div>
+                    <div class="pure-u-3-5 pure-u-md-17-24">
+                        <div id="mortar" class="coord">
+                            <img id="mortarImg" class="unselectable pure-img" loading="lazy" alt="mortar">
+                            <input id="mortar-location" class="autofocus1" spellcheck="false" maxlength="10" type="text" placeholder="A01-5-7" autocomplete="off" tabindex="2" autofocus>
+                        </div>
+                    </div>
+                    <div class="pure-u-1-5 pure-u-md-1-24"><span tabindex="4" onFocus="document.querySelector('.autofocus1').focus()"></span></div>
+                </div>
+            </div>
+
+            <div class="pure-u-md-2-24"></div>
+
+            <div class="pure-u-1 pure-u-md-11-24">
+                <div class="pure-g">
+                    <div class="pure-u-1-5 pure-u-md-1-24"></div>
+                    <div class="pure-u-3-5 pure-u-md-17-24">
+                        <div id="target" class="coord">
+                            <img id="targetImg" class="unselectable pure-img" loading="lazy" alt="target">
+                            <input id="target-location" class="autofocus11" spellcheck="false" maxlength="10" type="text" placeholder="C03-2-7-9" autocomplete="off" tabindex="3">
+                        </div>
+                    </div>
+                    <div class="pure-u-1-5 pure-u-md-6-24 "></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="results" class="pure-g">
+            <div class="pure-u-md-2-24 pure-u-lg-2-24"></div>
+            <div class="pure-u-1 pure-u-md-20-24 pure-u-lg-20-24">
+                <div id="settings">
+                    <div id="copy" class="pure-g unselectable">
+                        <div id="bearing" class="pure-u-10-24">
+                            <span id="bearingNum">xxx</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><defs><style>.fa-secondary{opacity:.4}</style></defs><path class="fa-secondary" d="M96 97.6l0 48.3c36.9 4.3 71.6 16 102.4 33.6l27.4-39.6C187 117.1 143 102.2 96 97.6zm129.3 99.4c29.4 21.6 54.2 49.1 72.9 80.5l41.7-23.8c-22.2-37.7-52-70.5-87.2-96.2l-27.3 39.5zm87.6 109c10.8 24.3 18.1 50.6 21.3 78l48.3 0c-3.6-36.1-13.2-70.4-27.7-102L312.8 306z"/><path class="fa-primary" d="M64 32l0 32 0 352 352 0 32 0 0 64-32 0L32 480 0 480l0-32L0 64 0 32l64 0z"/></svg>
+                        </div>
+                        <div id="errorMsg" class="pure-u-4-24">-</div>
+                        <div id="elevation" class="pure-u-10-24">
+                            <span id="elevationNum">xxxx</span>
+                            <button id="highlow">
+                                <svg id="highlowicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><defs><style>.fa-secondary{opacity:.4}</style></defs><path class="fa-secondary" d="M288 352c0 8.2 3.1 16.4 9.4 22.6l96 96c6.2 6.2 14.4 9.4 22.6 9.4s16.4-3.1 22.6-9.4l96-96c6.2-6.2 9.4-14.4 9.4-22.6s-3.1-16.4-9.4-22.6c-12.5-12.5-32.8-12.5-45.3 0L448 370.7 448 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7-41.4-41.4c-12.5-12.5-32.8-12.5-45.3 0c-6.2 6.2-9.4 14.4-9.4 22.6z"/><path class="fa-primary" d="M137.4 41.4c12.5-12.5 32.8-12.5 45.3 0l96 96c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L192 141.3 192 448c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-306.7L86.6 182.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l96-96z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button id="savebutton" class="hidden">
+                        <svg class=".del" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"/></svg>
+                </div>
+            </div>
+            <div class="pure-u-md-2-24 pure-u-lg-2-24"></div>
+        </div>
+
+        <div id="saved" class="pure-g hidden unselectable">
+            <div class="pure-u-1">
+                <div class="saved_list"></div>
+            </div>
+            <span id="ruler"></span>
+        </div>
+
+    </div>
+
+    <div class="pure-u-2-24 pure-u-md-1-8 pure-u-lg-1-5 pure-u-xxl-7-24"></div>
+
+    <div id="footerButtons">
+        <div class="fabs returnBtn">
+            <input id="fabCheckbox" type="checkbox" class="fab-checkbox2">
+            <label class="fab fab2" for="fabCheckbox">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M384 476.1L192 421.2l0-385.3L384 90.8l0 385.3zm32-1.2l0-386.5L543.1 37.5c15.8-6.3 32.9 5.3 32.9 22.3l0 334.8c0 9.8-6 18.6-15.1 22.3L416 474.8zM15.1 95.1L160 37.2l0 386.5L32.9 474.5C17.1 480.8 0 469.2 0 452.2L0 117.4c0-9.8 6-18.6 15.1-22.3z"></path></svg>
+            </label>
+        </div>
+    </div>
+
+</div>

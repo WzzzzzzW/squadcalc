@@ -1,0 +1,21 @@
+{
+    "deployables": "Розгортання",
+        "Mortar": "Міномет 81 мм",
+        "UB-32": "УБ-32",
+        "HellCannon": "Адський гармата",
+    "vehicles": "Транспортні засоби",
+        "Tech.Mortar": "Тех. міномет",
+        "Tech.UB-32": "Тех. УБ-32",
+        "BM-21Grad": "БМ-21 Град",
+        "M1064M121": "М1064 М121",
+            "impact": "Удар",
+            "nearSurface": "антена",
+    "modded": "Модові",
+        "Mk19": "МК19-ДКУ",
+        "M109": "M109A7 Paladin",
+        "T62.DUMP.TRUCK": "T62 Dump Truck",
+        "MTLB_FAB500": "MTLB БЕГЕМОТ",
+        "HIMARS": "M142 HIMARS",
+        "TOS-1A": "TOS-1A",
+        "type_63": "Type 63"
+}

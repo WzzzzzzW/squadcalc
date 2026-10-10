@@ -1,0 +1,21 @@
+{
+    "deployables": "武器工事",
+        "Mortar": "81毫米迫击炮",
+        "UB-32": "UB32火箭巢",
+        "HellCannon": "地狱加农(煤气罐)",
+    "vehicles": "载具",
+        "Tech.Mortar": "迫击炮皮卡",
+        "Tech.UB-32": "火箭巢车",
+        "BM-21Grad": "BM21-冰雹",
+        "M1064M121": "M1064 M121",
+            "impact": "高爆",
+            "nearSurface": "空爆",
+    "modded": "Mod版",
+        "Mk19": "MK19-遥控武器站",
+        "M109": "M109A7 Paladin",
+        "T62.DUMP.TRUCK": "T62 Dump Truck",
+        "MTLB_FAB500": "MTLB БЕГЕМОТ",
+        "HIMARS": "M142 HIMARS",
+        "TOS-1A": "TOS-1A",
+        "type_63": "Type 63"
+}

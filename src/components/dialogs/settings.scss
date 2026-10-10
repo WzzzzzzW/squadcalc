@@ -1,0 +1,630 @@
+@use '../shared/variables';
+
+#helpDialog {
+    width: 94%;
+    height: 650px;
+    max-width: 600px;
+    font-size: 0.6em;
+    font-weight: bold;
+    #lngSelector {
+        position: absolute;
+        right: 50px;
+        top: 8px;
+        font-weight: bold;
+    }
+    .panel {
+        display: none;
+        &.active {
+            display: block;
+        }
+    }
+    .dropbtn4 {
+        color: #fff;
+        line-height: 1.5em;
+        text-transform: uppercase;
+        text-align: center;
+        background-color: var(--themecolor, variables.$mainBGColor);
+        z-index: 1;
+        width: max-content;
+        min-width: max-content;
+        select {
+            -moz-appearance: none;
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: transparent;
+            background-image: none;
+            border: none;
+            box-shadow: none;
+        }
+        &:focus {
+            outline: none;
+        }
+        .select2 {
+            background-color: transparent;
+        }
+        .select2-container {
+            @include variables.text-outline;
+            background-color: transparent;
+            border-bottom: 1px solid variables.$mainTxtColor;
+            line-height: 2.188em;
+            padding-bottom: 0.3em;
+            text-transform: uppercase;
+        }
+    }
+    h3 {
+        font-size: 1.3em;
+    }
+    #panel2 {
+        table {
+            font-size: 0.95em;
+        }
+    }
+    table {
+        border: none;
+        margin: 0 0 1.5em 3em;
+        &.shortcuts {
+            padding-top: 1.5em;
+            thead th {
+                font-size: 1.1em;
+                color: variables.$mainTxtColor;
+                opacity: 0.5;
+                padding-bottom: 10px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                text-align: left;
+            }
+            td {
+                &:nth-child(1) {
+                    padding: 12px 0;
+                    white-space: nowrap;
+                }
+                &.arrow {
+                    padding: 0 16px;
+                    opacity: 0.3;
+                    font-size: 1.4em;
+                }
+            }
+            kbd {
+                display: inline-block;
+                padding: 4px 10px;
+                font-size: 1.8em;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                background-color: #2a2a2a;
+                border: 1px solid #555;
+                border-radius: 3px;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+                color: #ddd;
+            }
+            .shortcut-row {
+                cursor: pointer;
+                transition: opacity 0.15s ease;
+                &:hover { opacity: 0.7; }
+                &.is-custom .shortcut-key-cell kbd {
+                    border-color: variables.$mainColor;
+                    color: variables.$mainColor;
+                }
+                .shortcut-edit {
+                    padding-left: 16px;
+                    opacity: 0;
+                    transition: opacity 0.15s ease;
+                    svg {
+                        height: 1.2em;
+                        width: 1.2em;
+                        fill: variables.$mainTxtColor;
+                    }
+                }
+                &:hover .shortcut-edit { opacity: 0.5; }
+            }
+        }
+        &.userSettings {
+            td {
+                padding: 0;
+                border: none;
+                &:nth-child(1) {
+                    width: 30px;
+                }
+            }
+        }
+        .toggleCheckbox {
+            @extend .unselectable;
+            cursor: pointer;
+            &:hover {
+                transition: text-shadow 0.3s ease, color 0.3s ease;
+                text-shadow: 0 0 4px #ffffff75;
+            }
+        }
+        .themeFontSettings {
+            // Always default font, even with the seasonal theme font on
+            --main-font: montserrat;
+            font-family: montserrat, Times, "Times New Roman", serif;
+            font-synthesis: initial;
+            .toggleCheckbox {
+                color: variables.$mainColor;
+            }
+        }
+        caption {
+            margin: 0 0 10px;
+            color: variables.$mainTxtColor;
+            font-style: normal;
+            font-size: 1.3em;
+            text-align: left;
+            font-family: variables.$mainFont, Times, "Times New Roman", serif;
+        }
+        &#links {
+            bottom: 0;
+            right: 0;
+            position: absolute;
+            width: auto;
+            font-size: 1.6em;
+            float: right;
+            margin: 0 0.5em 0.5em 0;
+            td {
+                border: none;
+                padding: 0 0.4em;
+            }
+            a, button {
+                margin: 0;
+                background: none;
+                border: none;
+                padding: 0;
+                cursor: pointer;
+            }
+            svg {
+                height: 1.1em;
+                width: 1.1em;
+                fill: variables.$mainTxtColor;
+                &:hover {
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    transform: scale(0.9);
+                    fill: variables.$mainColor;
+                }
+            }
+        }
+    }
+    #settingsVersion {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        margin: 0 0 1em 2em;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.4em;
+        span {
+            font-size: 0.9em;
+            color: variables.$mainTxtColor;
+            opacity: 0.6;
+            letter-spacing: 0.5px;
+            &.separator {
+                opacity: 0.4;
+            }
+            &.error {
+                color: variables.$mainColor;
+                opacity: 1;
+            }
+        }
+    }
+    #mapBtnToggles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        .mapBtnToggle {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(17, 17, 17, 0.75);
+            border: rgba(255, 255, 255, 0.08) solid 1px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #ccc;
+            svg {
+                height: 1.3em;
+                fill: #fff;
+                pointer-events: none;
+            }
+            &.mapBtnToggle-3d {
+                color: #fff;
+                font-size: 0.85em;
+                font-weight: 700;
+                letter-spacing: 0.02em;
+            }
+            &.active {
+                background-color: variables.$mainColor;
+                border-color: variables.$mainColor;
+            }
+            &:not(.active) {
+                opacity: 0.3;
+                filter: grayscale(1);
+            }
+            &:focus {
+                outline: none;
+            }
+
+            @media (hover: hover) {
+                &:hover {
+                    opacity: 1;
+                    filter: none;
+                }
+            }
+        }
+    }
+    .slidersHolders {
+        width: 100%;
+        height: auto;
+        display: inline-block;
+        .slidersTables {
+            width: 85%;
+            margin: 0 0 0 3em;
+            td {      
+                &:nth-child(1) {
+                    width: 40%;
+                }
+                &:nth-child(2) {
+                    width: 60%;
+                    .slider-wrapper {
+                        position: relative;
+                        height: 37px;
+                        display: flex;
+                        align-items: center;
+                        .ticks {
+                            position: absolute;
+                            width: calc(100% - 16px);
+                            left: 8px;
+                            top: 50%;
+                            height: 0;
+                            pointer-events: none;
+                            .tick {
+                                position: absolute;
+                                transform: translateX(-50%) translateY(-50%);
+                                width: 1px;
+                                height: 8px;
+                                background: #979797;
+                            }
+                            .tick::after {
+                                content: attr(data-value);
+                                position: absolute;
+                                top: 16px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                font-size: 0.8em;
+                                color: #8b8b8b;
+                            }
+                            .default-tick::after {
+                                color: #aaa;
+                            }
+                        }           
+                        input[type="range"] {
+                            // Chrome ignores ::-webkit-slider-thumb styling
+                            // unless the input itself drops native appearance
+                            -webkit-appearance: none;
+                            appearance: none;
+                            width: 100%;
+                            height: 2px;
+                            border-radius: 1px;
+                            background: rgba(255, 255, 255, 0.25);
+                            outline: none;
+                            position: relative;
+                            z-index: 1;
+                            cursor: pointer;
+                        }
+                        input[type="range"]::-webkit-slider-thumb {
+                            -webkit-appearance: none;
+                            width: 16px;
+                            height: 16px;
+                            background: linear-gradient(135deg, variables.$mainColor 0%, variables.$mainColor 100%);
+                            border: 2px solid rgba(255, 255, 255, 0.1);
+                            border-radius: 50%;
+                            cursor: pointer;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(178, 34, 34, 0);
+                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        }
+                        input[type="range"]::-webkit-slider-thumb:hover {
+                            transform: scale(1.15);
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(178, 34, 34, 0.2);
+                            border-color: rgba(255, 255, 255, 0.2);
+                        }
+                        input[type="range"]::-moz-range-thumb {
+                            width: 16px;
+                            height: 16px;
+                            background: linear-gradient(135deg, variables.$mainColor 0%, variables.$mainColor 100%);
+                            border: 1px solid rgba(255, 255, 255, 0.7);
+                            border-radius: 50%;
+                            cursor: pointer;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(178, 34, 34, 0);
+                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        }
+                        input[type="range"]::-moz-range-thumb:hover {
+                            transform: scale(1.15);
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(178, 34, 34, 0.2);
+                            border-color: rgba(255, 255, 255, 0.2);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+.new {
+    @extend .unselectable;
+    color: red;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+
+$bezier: cubic-bezier(0.65, 0.25, 0.56, 0.96);
+
+.mcui-checkbox,
+.mcui-radio {
+    display: flex;
+    align-items: center;
+    user-select: none;
+    padding: 0.313em 0;
+    box-sizing: border-box;
+    input[type="checkbox"],
+    input[type="radio"] {
+        position: absolute !important;
+        height: 1px;
+        width: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
+    input[type="checkbox"] + span,
+    input[type="radio"] + span {
+        border: 2px solid variables.$mainColor;
+        height: 1.5em;
+        width: 1.5em;
+        box-sizing: border-box;
+        border-radius: 2px;
+        position: relative;
+        background-color: white;
+    }
+    input[type="checkbox"]:checked + span {
+        border-color: variables.$mainColor;
+        transition: border-color 107ms $bezier;
+        .mcui-check {
+            opacity: 1;
+            transition: opacity 107ms $bezier;
+            polyline {
+            animation: dash-check 107ms $bezier forwards;
+            }
+        }
+    }
+    input[type="checkbox"]:disabled + span {
+        background-color: grey;
+        border: none;
+        pointer-events: none;
+        .mcui-check {
+            color: #111;
+        }
+    }
+    input[type="checkbox"]:not(:disabled) + span:active {
+        transform: scale(0.9);
+    }
+}
+
+.mcui-check {
+    height: 100%;
+    width: 100%;
+    transform: scale(1);
+    color: variables.$mainColor;
+    opacity: 0;
+    &:hover:not([disabled]){
+        cursor: pointer;
+    }
+    polyline {
+      fill: none;
+      transform-origin: 50% 50%;
+      stroke-width: 5px;
+      stroke-dasharray: 22.7714;
+      stroke: currentcolor;
+    }
+}
+  
+@supports (display: grid) {
+    .mcui-check {
+        polyline {
+            stroke-dashoffset: 22.7714;
+        }
+    }
+}
+
+#modsPanelContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.95em;
+    padding: 0.4em 1.5em 0.2em;
+    .modToggleTile {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3em;
+        width: 100%;
+        min-height: 4.6em;
+        position: relative;
+        color: variables.$mainTxtColor;
+        background-color: #000;
+        border: 1px solid #555;
+        border-radius: 4px;
+        padding: 0.85em 1.2em;
+        font-size: 1.08em;
+        font-weight: bold;
+        text-align: left;
+        cursor: pointer;
+        overflow: hidden;
+        transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        // Hover effect only for devices that support true hover (desktop)
+        @media (hover: hover) {
+            &:hover:not(.locked) {
+                border-color: variables.$mainColor;
+                background-color: rgba(variables.$mainColor, 0.12);
+            }
+        }
+        .modTileLogo {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 4.6em;
+            border-radius: 0 3px 3px 0;
+            object-fit: cover;
+        }
+        .modTileName {
+            font-size: 1em;
+            padding-right: 4.3em;
+        }
+        .modTileStats {
+            display: flex;
+            align-items: center;
+            gap: 0.55em;
+            font-size: 0.82em;
+            font-weight: bold;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            .modTileStatsSeparator {
+                opacity: 0.5;
+            }
+        }
+        &.active {
+            background-color: variables.$mainColor;
+            border-color: variables.$mainColor;
+            color: variables.$mainTxtColor;
+        }
+        &.locked {
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+    }
+}
+
+#settingsControls {
+    margin: 0 0 1.3em;
+    text-align: center;
+    width: 100%;
+    button {
+        color: variables.$mainBGColor;
+        background-color: white;
+        width: 17%;
+        margin-bottom: 1em;
+        vertical-align: middle;
+        height: 18px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease, width 0.3s ease;
+        span {
+            vertical-align: middle;
+            display: inline-flex;
+        }
+        &:hover {
+            background-color: grey;
+        }
+        &.active {
+            background-color: variables.$mainColor;
+            color: variables.$mainTxtColor;
+            padding-bottom: 0;
+            height: 25px;
+            width: 22%;
+            svg {
+                display: inline-block;
+                fill: variables.$mainTxtColor;
+            }
+        }
+        svg {
+            height: 1.5em;
+            width: 1.5em;
+            display: none;
+            fill: variables.$mainBGColor;
+            &#flagsvg{
+                height: 1.2em;
+                width: 1.2em;
+            }
+        }
+    }
+}
+
+#shortcutCaptureDialog {
+    width: 480px;
+    max-width: calc(100vw - 2em);
+    padding: 2.5em;
+    text-align: center;
+    font-size: 1em;
+    font-weight: bold;
+    background-color: variables.$mainBGColor;
+    color: variables.$mainTxtColor;
+    border: 1px solid #444;
+    border-radius: 6px;
+    .capture-title {
+        font-size: 1.3em;
+        margin: 0 0 1.2em;
+        color: variables.$mainTxtColor;
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .capture-key-display {
+        min-height: 3em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.8em;
+        .capture-listening {
+            opacity: 0.4;
+            font-size: 1.1em;
+        }
+        .capture-preview {
+            font-size: 1.1em;
+            kbd {
+                display: inline-block;
+                padding: 6px 14px;
+                font-size: 1.6em;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                background-color: #2a2a2a;
+                border: 1px solid #555;
+                border-radius: 3px;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+                color: #ddd;
+            }
+        }
+    }
+    .capture-conflict {
+        min-height: 1.4em;
+        font-size: 0.95em;
+        color: variables.$mainColor;
+        margin: 0 0 1em;
+    }
+    .capture-buttons {
+        display: flex;
+        gap: 0.6em;
+        justify-content: center;
+        button {
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: bold;
+            border-radius: 3px;
+            border: 1px solid #555;
+            background-color: #2a2a2a;
+            color: variables.$mainTxtColor;
+            transition: background-color 0.2s ease;
+            &:hover { background-color: #3a3a3a; }
+            &#captureSave {
+                background-color: variables.$mainColor;
+                border-color: variables.$mainColor;
+                color: #fff;
+                &:hover { opacity: 0.85; }
+                &:disabled {
+                    opacity: 0.3;
+                    cursor: default;
+                    pointer-events: none;
+                }
+            }
+        }
+    }
+}

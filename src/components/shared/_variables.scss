@@ -1,0 +1,268 @@
+// Colors
+$mainColor: rgb(207, 106, 12);
+$mainBGColor: #111;
+$mainTxtColor: #fff;
+$newColor: green;
+
+
+:root {
+    --main-color: #{$mainColor}; // Interpolation so we can use this color in JS
+    color-scheme: dark;
+}
+
+// Fonts
+$logoFont: oswald;
+$themeFont: "Creepster"; // seasonal font (Halloween), self-hosted below
+$themeFontScale: 130%; // Creepster is much narrower than montserrat, scale it up everywhere
+
+// Self-hosted so size-adjust can scale every use of the font at once
+@font-face {
+    font-family: Creepster;
+    src: url("/fonts/creepster.woff2") format("woff2");
+    font-display: swap;
+    size-adjust: $themeFontScale;
+}
+
+// $mainFont resolves at runtime so the seasonal font can be toggled from settings
+// ("no-theme-font" body class). font-synthesis: none avoids a faked bold on the
+// single-weight theme font.
+
+:root {
+    --main-font: montserrat;
+}
+
+body:not(.no-theme-font) {
+    --main-font: #{$themeFont}, montserrat;
+    font-synthesis: none;
+}
+
+$mainFont: var(--main-font);
+
+// Seasonal font override, disabled by the "no-theme-font" body class (settings toggle).
+// Overrides the element's own font-family/weight, which apply again when disabled.
+@mixin theme-font($fallback, $spacing: 0.04em) {
+    body:not(.no-theme-font) & {
+        font-family: $themeFont, $fallback;
+        font-weight: normal;
+        letter-spacing: $spacing;
+    }
+}
+
+
+/*
+   * -- BASE STYLES --
+*/
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+body,
+html,
+button,
+input,
+select,
+textarea,
+caption,
+.pure-g [class*="pure-u"] {
+    color: $mainTxtColor;
+    font-family: $mainFont, Times, "Times New Roman", serif;
+    letter-spacing: 0.1em;
+    text-align: center;
+}
+
+body {
+    background-color: var(--themecolor, $mainBGColor);
+    overflow: hidden;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+img {
+    @extend .unselectable;
+    display: block;
+    margin: auto;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+}
+
+input {
+    background: transparent;
+    border: 0;
+    border-bottom: 3px solid $mainTxtColor;
+    font-size: 1.1em;
+    font-weight: bold;
+    height: 30px;
+    line-height: 2.188em;
+    padding: 0;
+    text-transform: uppercase;
+    width: 100%;
+    &:focus {
+        outline: none;
+    }
+    &::selection {
+        background-color: $mainColor;
+    }
+}
+
+button:focus {
+    outline: none;
+}
+
+
+// Text-Shadows/Ouline
+@mixin text-outline {
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #111,
+    -1px 1px 0 #111,
+    1px -1px 0 #111,
+    -1px -1px 0 #111,
+   0 1px 0 #111,
+    0 -1px 0 #111,
+    -1px 0 0 #111,
+    1px 0 0 #111,
+    1px 2px 0 #111,
+    -1px 2px 0 #111,
+    1px -2px 0 #111,
+    -2px -2px 0 #111,
+    0 2px 0 #111,
+    0 -2px 0 #111,
+    -1px 0 0 #111,
+    1px 0 0 #111,
+    1px 1px 0 #111,
+    -1px 1px 0 #111,
+    1px -1px 0 #111,
+    -1px -1px 0 #111,
+    1px 2px 0 #111,
+    -1px 1px 0 #111,
+    1px -1px 0 #111,
+    -1px -1px 0 #111;
+}
+
+@mixin light-text-outline {
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #111,
+    -1px 1px 0 #111,
+    1px -1px 0 #111,
+    -1px -1px 0 #111,
+   0 1px 0 #111,
+    0 -1px 0 #111,
+    -1px 0 0 #111,
+    1px 0 0 #111,
+    1px 1px 0 #111,
+    -1px 1px 0 #111,
+    1px -1px 0 #111,
+    -1px -1px 0 #111,
+    0 1px 0 #111,
+    0 -1px 0 #111,
+    -1px 0 0 #111,
+    1px 0 0 #111,
+    1px 1px 0 #111,
+    -1px 1px 0 #111,
+    1px -1px 0 #111,
+    -1px -1px 0 #111,
+    1px 1px 0 #111,
+    -1px 1px 0 #111,
+    1px -1px 0 #111,
+    -1px -1px 0 #111;
+}
+
+.unselectable {
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.hidden {
+    opacity: 0 !important;
+}
+
+.animate__animated {
+    &.animate__fadeInDown {
+        --animate-duration: 0.2s;
+    }
+    &.animate__fadeInRight, &.animate__fadeInLeft, &.animate__fadeInUp {
+        --animate-duration: 0.2s;
+        svg {
+            --animate-duration: 0.5s;
+        }
+    }
+    &.animate__fadeIn {
+        --animate-duration: 1s;
+    }
+    &.animate__shakeX {
+        --animate-duration: 0.5s;
+    }
+    &.animate__headShake {
+        --animate-duration: 0.4s;
+    }
+    &.animate__zoomIn {
+        --animate-duration: 0.15s;
+    }
+}
+
+#helpDialog.animate__animated {
+    &.animate__fadeIn {
+        --animate-duration: 3.1s;
+        
+    }
+}
+
+/**************************************
+*  Animations
+***************************************/
+
+
+@keyframes appear {
+    100% {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes dash-check {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes target-appear {
+    0% {
+        top: -600px;
+    }
+    100% {
+        top: 0;
+    }
+}
+
+
+@keyframes weapon-appear {
+    0% {
+        top: -10px;
+        opacity: 0;
+    }
+    100% {
+        top: 0;
+        opacity: 1;
+    }
+}
+
+@keyframes loading {
+    0% {
+        background-position: right bottom;
+    }
+    100% {
+        background-position: left bottom;
+    }
+}
+

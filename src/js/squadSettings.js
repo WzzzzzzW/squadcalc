@@ -1,0 +1,812 @@
+import { animateCSS } from "./animations.js";
+import SquadFactions from "./squadFactions.js";
+import packageInfo from "../../package.json";
+
+
+/**
+ * Centralized settings management for SquadCalc.
+ * Handles loading, saving, and UI binding for all user preferences.
+ */
+export default class SquadSettings {
+
+    static get TYPES() {
+        return {
+            CHECKBOX: "checkbox",
+            SLIDER: "slider"
+        };
+    }
+
+    constructor(app) {
+        this.app = app;
+        this.definitions = this.getCheckboxDefinitions();
+        this.sliderDefinitions = this.getSliderDefinitions();
+    }
+
+    /**
+     * Initialize all settings - call after DOM is ready
+     */
+    init() {
+        this.loadCheckboxes();
+        this.loadSliders();
+        this.bindCheckboxes();
+        this.bindSliders();
+        this.bindLabelClicks();
+        this.loadButtonToggles();
+        this.bindButtonToggles();
+        this.bindMenuButtons();
+        this.applyInitialState();
+        $("#appVersion").text(`SquadCalc v${packageInfo.version}`);
+    }
+
+
+    /**
+     * Checkbox setting definitions
+     * Each setting has: key (localStorage), default, selector, and optional onChange handler
+     */
+    getCheckboxDefinitions() {
+        return {
+            // Keypad & Cursor
+            keypadUnderCursor: {
+                key: "settings-keypad-cursor",
+                default: false,
+                selector: "#keypadUnderCursorSetting",
+                requiresMouse: true,
+                onChange: (val) => {
+                    if (val) {
+                        this.app.minimap.on("pointermove", this.app.minimap._handleMouseMove);
+                    } else {
+                        this.app.minimap.off("pointermove", this.app.minimap._handleMouseMove);
+                        this.app.minimap.mouseLocationPopup.close();
+                    }
+                }
+            },
+            cursor: {
+                key: "settings-cursor",
+                default: false,
+                selector: "#cursorChoiceSettings",
+                requiresMouse: true,
+                onChange: () => {
+                    $("body").toggleClass("map-crosshair", !this.cursor);
+                }
+            },
+            disableThemeFont: {
+                key: "settings-disable-theme-font",
+                default: false,
+                selector: "#themeFontSettings",
+                onChange: () => {
+                    $("body").toggleClass("no-theme-font", this.disableThemeFont);
+                }
+            },
+
+            // Weapon & Target Markers
+            weaponDrag: {
+                key: "settings-weapon-drag",
+                default: true,
+                selector: "#weaponDragSetting"
+            },
+            targetDrag: {
+                key: "settings-target-drag",
+                default: true,
+                selector: "#targetDragSetting"
+            },
+            spreadRadius: {
+                key: "settings-spread-radius",
+                default: true,
+                selector: "#spreadRadiusSetting",
+                onChange: () => this.app.minimap.updateTargetsSpreads()
+            },
+            damageRadius: {
+                key: "settings-damage-radius",
+                default: true,
+                selector: "#damageRadiusSetting",
+                onChange: () => this.app.minimap.updateTargetsSpreads()
+            },
+            targetGrid: {
+                key: "settings-target-grid",
+                default: false,
+                selector: "#targetGridSetting",
+                onChange: () => this.app.minimap.updateTargets()
+            },
+            lineToTarget: {
+                key: "settings-line-to-target",
+                default: false,
+                selector: "#lineToTargetSetting",
+                onChange: () => this.app.minimap.updateTargets()
+            },
+            targetAnimation: {
+                key: "settings-target-animation",
+                default: true,
+                selector: "#targetAnimationSettings",
+                onChange: () => {
+                    this.app.minimap.activeTargetsMarkers.eachLayer((target) => {
+                        target.updateCalcPopUps();
+                        target.updateIcon();
+                    });
+                }
+            },
+            realMaxRange: {
+                key: "settings-real-max-range",
+                default: false,
+                selector: "#realMaxRangeSettings",
+                onChange: () => this.app.minimap.updateWeapons()
+            },
+            // Calculation Display
+            lowAndHigh: {
+                key: "settings-low-high",
+                default: false,
+                selector: "#lowAndHighSetting",
+                onChange: () => this.app.minimap.updateTargets()
+            },
+            lastDigits: {
+                key: "settings-last-digits",
+                default: false,
+                selector: "#lastDigitsSetting",
+                onChange: () => this.app.minimap.updateTargets()
+            },
+            showBearing: {
+                key: "settings-show-bearing",
+                default: true,
+                selector: "#bearingSetting",
+                onChange: () => this.app.minimap.updateTargets()
+            },
+            showDistance: {
+                key: "settings-show-distance",
+                default: false,
+                selector: "#distanceSetting",
+                onChange: () => this.app.minimap.updateTargets()
+            },
+            showTimeOfFlight: {
+                key: "settings-show-timeofflight",
+                default: false,
+                selector: "#timeOfFlightSetting",
+                onChange: () => this.app.minimap.updateTargets()
+            },
+            showHeight: {
+                key: "settings-show-height",
+                default: false,
+                selector: "#heightSetting",
+                onChange: () => this.app.minimap.updateTargets()
+            },
+            copyTarget: {
+                key: "settings-copy-target",
+                default: false,
+                selector: "#targetCopySetting"
+            },
+
+
+            // Factions & Layer
+            enableFactions: {
+                key: "settings-enable-factions",
+                default: true,
+                selector: "#enableFactionsSettings",
+                controls: ["#hideLowRespawnSettings", "#disableSoundsSettings", "#defaultFactionsSettings", "#minimizeFactionBarSettings"],
+                onChange: (val) => {
+                    if (!val) {
+                        $("#factionsTab, #factionsButton").hide();
+                        $("#hideLowRespawnSettings").prop("disabled", true);
+                        $("#disableSoundsSettings").prop("disabled", true);
+                        $("#defaultFactionsSettings").prop("disabled", true);
+                        $("#minimizeFactionBarSettings").prop("disabled", true);
+                    } else {
+                        $("#hideLowRespawnSettings").prop("disabled", false);
+                        $("#disableSoundsSettings").prop("disabled", false);
+                        $("#defaultFactionsSettings").prop("disabled", false);
+                        $("#minimizeFactionBarSettings").prop("disabled", false);
+                        if (this.app.minimap.layer) {
+                            this.app.minimap.layer.factions = new SquadFactions(this.app.minimap.layer);
+                            $("#factionsTab, #factionsButton").show();
+                        }
+                    }
+                }
+            },
+            defaultFactions: {
+                key: "settings-default-factions",
+                default: true,
+                selector: "#defaultFactionsSettings"
+            },
+            disableSounds: {
+                key: "settings-disable-sounds",
+                default: false,
+                selector: "#disableSoundsSettings"
+            },
+            minimizeFactionBar: {
+                key: "settings-minimize-factionbar",
+                default: false,
+                selector: "#minimizeFactionBarSettings",
+                onLoad: (val) => {
+                    $("#factionsButton").toggleClass("collapsed", val);
+                },
+                onChange: (val) => {
+                    $("#factionsButton").toggleClass("collapsed", val);
+                }
+            },
+            hideLowRespawn: {
+                key: "settings-hide-lowrespawn",
+                default: true,
+                selector: "#hideLowRespawnSettings",
+                onChange: () => {
+                    if ($(".btn-pin.active").length === 0) return;
+
+                    // Clear all pinned vehicles & remove timers
+                    $("#pinnedVehiclesTab .pinnedVehicles").each(function() {
+                        const $vehicleDiv = $(this);
+                        const timerId = $vehicleDiv.data("timerId");
+                        if (timerId) clearInterval(timerId);
+                        $vehicleDiv.removeClass("active");
+                        $vehicleDiv.removeData("timerId");
+                    });
+                    $("#pinnedVehiclesTab").empty();
+
+                    let factionData, country, faction;
+                    if ($(".btn-pin.active")[0]?.id === "team1PinButton") {
+                        factionData = this.app.minimap.layer.layerData.units.team1Units;
+                        country = $(".dropbtn8").val();
+                        faction = $(".dropbtn9").val();
+                    } else {
+                        factionData = this.app.minimap.layer.layerData.units.team2Units;
+                        country = $(".dropbtn10").val();
+                        faction = $(".dropbtn11").val();
+                    }
+                    this.app.minimap.layer.factions.pinUnit(factionData, country, faction);
+                }
+            },
+            showRespawnCam: {
+                key: "settings-show-respawn-cam",
+                default: true,
+                selector: "#respawnCamSettings",
+                onChange: (val) => {
+                    if (val) {
+                        this.app.minimap.layer.cameraActor?.show();
+                    } else {
+                        this.app.minimap.layer.cameraActor?.hide();
+                    }
+                }
+            },
+            revealLayerOnHover: {
+                key: "settings-reveal-onHover",
+                default: true,
+                selector: "#revealLayerOnHoverSettings"
+            },
+            capZoneOnHover: {
+                key: "settings-capZone-onHover",
+                default: false,
+                selector: "#capZoneOnHoverSettings",
+                onChange: (val) => {
+                    if (!this.app.minimap.layer) return;
+                    if (this.app.minimap.getZoom() <= this.app.minimap.detailedZoomThreshold) return;
+                    if (!val) {
+                        this.app.minimap.layer.revealAllCapzones();
+                    } else {
+                        this.app.minimap.layer.hideAllCapzones();
+                    }
+                }
+            },
+
+
+            // Flags & Zones
+            circlesFlags: {
+                key: "settings-circles-flags",
+                default: true,
+                selector: "#circlesFlagsSettings",
+                onChange: () => {
+                    if (this.app.minimap.layer) {
+                        this.app.minimap.layer.flags.forEach(flag => flag.update());
+                        if (!this.app.minimap.layer.isVisible) {
+                            this.app.minimap.layer.toggleVisibility();
+                        }
+                    }
+                }
+            },
+            showNextFlagsPercentages: {
+                key: "settings-show-next-flags-percentages",
+                default: true,
+                selector: "#showNextFlagPercentageSettings",
+                onChange: (val) => {
+                    if (this.app.minimap.layer) {
+                        if (val) {
+                            this.app.minimap.layer.flags.forEach(flag => {
+                                if (flag.percentageBreakdown?.length) flag.showPercentage();
+                            });
+                        } else {
+                            this.app.minimap.layer.flags.forEach(flag => {
+                                flag.percentageText?.removeFrom(this.app.minimap.layer.layerGroup).remove();
+                            });
+                        }
+                    }
+                }
+            },
+            showFlagsDistance: {
+                key: "settings-show-flags-distance",
+                default: true,
+                selector: "#showFlagsDistanceSettings",
+                onChange: (val) => {
+                    if (this.app.minimap.layer) {
+                        if (val) {
+                            this.app.minimap.layer.polyline.showMeasurements({
+                                minPixelDistance: 50,
+                                scaling: this.app.minimap.mapToGameScale,
+                            });
+                        } else {
+                            this.app.minimap.layer.polyline.hideMeasurements();
+                        }
+                    }
+                }
+            },
+            showMapBorders: {
+                key: "settings-show-map-borders",
+                default: true,
+                selector: "#showMapBordersSettings",
+                onChange: (val) => {
+                    if (this.app.minimap.layer.borders) {
+                        this.app.minimap.layer.borders.setStyle({
+                            opacity: 0,
+                            fillOpacity: val ? 0.75 : 0
+                        });
+                    }
+                }
+            },
+            showMainZones: {
+                key: "settings-show-mainzones",
+                default: true,
+                selector: "#showMainZonesSettings",
+                onChange: (val) => {
+                    this.app.minimap.layer.mainZones.rectangles.forEach((rectangle) => {
+                        rectangle.setStyle({
+                            fillOpacity: val ? 0.1 : 0,
+                            opacity: val ? 1 : 0
+                        });
+                    });
+                }
+            },
+            showMainAssets: {
+                key: "settings-show-mainassets",
+                default: true,
+                selector: "#showMainAssetsSettings",
+                onChange: (val) => {
+                    if (this.app.minimap.getZoom() > this.app.minimap.detailedZoomThreshold) {
+                        this.app.minimap.layer.mainZones.assets.forEach(asset => {
+                            asset.setOpacity(val ? 1 : 0);
+                            if (val) {
+                                this.app.minimap.layer.revealSpawns();
+                            } else {
+                                this.app.minimap.layer.hideSpawns();
+                            }
+                        });
+                        this.app.minimap.layer.vehicleSpawners.forEach(spawn => {
+                            if (val) spawn.show();
+                            else spawn.hide();
+                        });
+                    }
+                }
+            },
+
+
+            // Map & UI
+            smoothMap: {
+                key: "settings-smooth-map",
+                default: false,
+                selector: "#mapAnimationSettings"
+            },
+            contextMenu: {
+                key: "settings-contextmenu",
+                default: true,
+                selector: "#contextMenuSettings"
+            },
+            highQualityImages: {
+                key: "settings-highquality-images",
+                default: false,
+                selector: null,  // Uses button, not checkbox
+                onLoad: (val) => {
+                    if (val) $(".btn-hd").addClass("active");
+                }
+            }
+        };
+    }
+
+
+    /**
+     * Slider setting definitions
+     * Values must match HTML input attributes
+     */
+    getSliderDefinitions() {
+        return {
+            fontSize: {
+                key: "settings-font-size",
+                min: 0.5,
+                default: 3,
+                max: 1.5,
+                selector: "#fontSlider",
+                ticksSelector: "#fontTicks",
+                tickValues: [0.5, 1, 1.5],
+                defaultTickIndex: 1,
+                formatTick: (val) => `${val * 100}%`,
+                onChange: () => this.app.changeFontSize()
+            },
+            markerSize: {
+                key: "settings-marker-size",
+                min: 0.5,
+                default: 3,
+                max: 1.5,
+                selector: "#markerSlider",
+                ticksSelector: "#markerTicks",
+                tickValues: [0.5, 1, 1.5],
+                defaultTickIndex: 1,
+                formatTick: (val) => `${val * 100}%`,
+                onChange: () => {
+                    this.app.minimap.activeMarkers.eachLayer((marker) => { marker.updateIconSize(); });
+                    this.app.minimap.activeTargetsMarkers.eachLayer((target) => { target.updateIcon(); });
+                    this.app.minimap.activeWeaponsMarkers.eachLayer((weapon) => { weapon.updateIcon(); });
+                }
+            },
+            gridOpacity: {
+                key: "settings-grid-opacity",
+                min: 0,
+                default: 0.8,
+                max: 1,
+                selector: "#gridSlider",
+                ticksSelector: "#gridTicks",
+                tickValues: [0, 0.8, 1],
+                defaultTickIndex: 1,
+                formatTick: (val) => `${val * 100}%`,
+                onChange: () => {
+                    this.app.minimap.grid.setOpacity(this.gridOpacity);
+                }
+            },
+            zoomSensitivity: {
+                key: "settings-zoom-sensitivity",
+                min: 0.5,
+                default: 2,
+                max: 1.5,
+                selector: "#zoomSlider",
+                ticksSelector: "#zoomTicks",
+                tickValues: [0.5, 1, 1.5],
+                defaultTickIndex: 1,
+                formatTick: (val) => `${val * 100}%`,
+                onChange: () => {
+                    this.app.minimap.options.smoothSensitivity = this.zoomSensitivity;
+                    this.app.minimap.options.wheelPxPerZoomLevel = 120 / this.zoomSensitivity;
+                }
+            },
+            brightness: {
+                key: "settings-brightness",
+                min: 0.5,
+                default: 1,
+                max: 1.5,
+                selector: "#brightnessSlider",
+                ticksSelector: "#brightnessTicks",
+                tickValues: [0.5, 1, 1.5],
+                defaultTickIndex: 1,
+                formatTick: (val) => `${val * 100}%`,
+                onChange: () => this.applyMapFilter()
+            },
+            contrast: {
+                key: "settings-contrast",
+                min: 0.5,
+                default: 1,
+                max: 1.5,
+                selector: "#contrastSlider",
+                ticksSelector: "#contrastTicks",
+                tickValues: [0.5, 1, 1.5],
+                defaultTickIndex: 1,
+                formatTick: (val) => `${val * 100}%`,
+                onChange: () => this.applyMapFilter()
+            }
+        };
+    }
+
+
+    /**
+     * Load all checkbox settings from localStorage
+     */
+    loadCheckboxes() {
+        Object.entries(this.definitions).forEach(([name, def]) => {
+            // Handle mouse-dependent settings
+            if (def.requiresMouse && !this.app.hasMouse) {
+                this[name] = false;
+                if (def.selector) {
+                    $(def.selector).prop("disabled", true).prop("checked", false);
+                }
+                return;
+            }
+
+            const stored = localStorage.getItem(def.key);
+            if (stored === null || isNaN(stored) || stored === "") {
+                localStorage.setItem(def.key, def.default ? 1 : 0);
+                this[name] = def.default;
+            } else {
+                this[name] = stored === "1" || stored === "true";
+            }
+
+            // Update checkbox state
+            if (def.selector) {
+                $(def.selector).prop("checked", this[name]);
+            }
+
+            // Call onLoad if defined
+            if (def.onLoad) {
+                def.onLoad(this[name]);
+            }
+        });
+    }
+
+
+    /**
+     * Load all slider settings from localStorage
+     */
+    loadSliders() {
+        Object.entries(this.sliderDefinitions).forEach(([name, def]) => {
+            const stored = localStorage.getItem(def.key);
+
+            if (stored === null || isNaN(stored) || stored === "") {
+                localStorage.setItem(def.key, def.default);
+                this[name] = def.default;
+            } else {
+                this[name] = parseFloat(stored);
+            }
+
+            const slider = document.getElementById(def.selector.replace("#", ""));
+            if (slider) {
+                slider.value = this[name];
+            }
+
+            // Create tick marks
+            this.createSliderTicks(def);
+        });
+    }
+
+    /**
+     * Create tick marks for a slider
+     */
+    createSliderTicks(def) {
+        const ticks = document.getElementById(def.ticksSelector.replace("#", ""));
+        if (!ticks) return;
+
+        def.tickValues.forEach((val, index) => {
+            const tick = document.createElement("div");
+            tick.className = "tick";
+            tick.setAttribute("data-value", def.formatTick(val));
+            
+            const percent = ((val - def.min) / (def.max - def.min)) * 100;
+            tick.style.left = percent + "%";
+            
+            if (index === def.defaultTickIndex) {
+                tick.classList.add("default-tick");
+            }
+            ticks.appendChild(tick);
+        });
+    }
+
+
+    /**
+     * Bind change events to all checkboxes
+     */
+    bindCheckboxes() {
+        Object.entries(this.definitions).forEach(([name, def]) => {
+            if (!def.selector) return;
+
+            $(def.selector).on("change", () => {
+                const val = $(def.selector).is(":checked");
+                this.set(name, val);
+            });
+        });
+    }
+
+    /**
+     * Bind input events to all sliders
+     */
+    bindSliders() {
+        Object.entries(this.sliderDefinitions).forEach(([name, def]) => {
+            const slider = document.getElementById(def.selector.replace("#", ""));
+            if (!slider) return;
+
+            slider.oninput = () => {
+                this[name] = parseFloat(slider.value);
+                localStorage.setItem(def.key, this[name]);
+                if (def.onChange) {
+                    def.onChange(this[name]);
+                }
+            };
+        });
+    }
+
+    /**
+     * Bind click events to setting labels for toggle behavior
+     */
+    bindLabelClicks() {
+        $(".toggleCheckbox").on("click", function() {
+            const checkbox = $(this).closest("tr").find("input[type='checkbox']");
+            if (checkbox.prop("disabled")) return;
+            checkbox.prop("checked", !checkbox.prop("checked")).trigger("change");
+            animateCSS($(this).closest("td"), "headShake");
+        });
+    }
+
+
+    /**
+     * Apply initial state after loading (e.g., CSS filters, cursor, map mode)
+     */
+    applyInitialState() {
+        // Load map mode from URL
+        const currentUrl = new URL(window.location);
+        const mapMode = currentUrl.searchParams.get("type");
+
+        if ($(".btn-" + mapMode).length) {
+            $(".btn-" + mapMode).addClass("active");
+        } else {
+            // Default to basemap button
+            $(".btn-basemap").addClass("active");
+            this.app.updateUrlParams({type: null});
+        }
+
+        // Apply map filter
+        this.applyMapFilter();
+
+        // Apply cursor setting
+        $("body").toggleClass("map-crosshair", !this.cursor);
+
+        // Apply seasonal theme font setting
+        $("body").toggleClass("no-theme-font", this.disableThemeFont);
+
+        // Handle faction-dependent settings
+        if (!this.enableFactions) {
+            $("#hideLowRespawnSettings").prop("disabled", true);
+            $("#disableSoundsSettings").prop("disabled", true);
+            $("#defaultFactionsSettings").prop("disabled", true);
+            $("#minimizeFactionBarSettings").prop("disabled", true);
+        }
+
+        // Hide factions if disabled via environment
+        if (process.env.DISABLE_FACTIONS === "true") {
+            $(".factionSettings").hide();
+        }
+
+        // Load target image
+        $("#targetImg").attr("src", "/img/target.webp");
+    }
+
+    /**
+     * Apply brightness and contrast filter to map
+     */
+    applyMapFilter() {
+        const brightness = this.brightness * 100;
+        const contrast = this.contrast * 100;
+        $("#map").css("filter", `brightness(${brightness}%) contrast(${contrast}%)`);
+    }
+
+    getButtonToggleDefinitions() {
+        return [
+            { key: "settings-btn-layers",  sharedContainer: "#mapBtnLayers",  buttons: ".btn-topomap, .btn-terrainmap, .btn-basemap", default: true },
+            { key: "settings-btn-hd",      sharedContainer: null,             buttons: ".btn-hd",                                   default: true },
+            { key: "settings-btn-3d",      sharedContainer: null,             buttons: ".btn-3d",                                   default: true },
+            { key: "settings-btn-layer-info", sharedContainer: "#mapBtnMain", buttons: ".btn-layer-info",                           default: true },
+            { key: "settings-btn-legacy",  sharedContainer: "#mapBtnMain",    buttons: ".btn-legacy",                                default: false },
+            { key: "settings-btn-helpmap", sharedContainer: "#mapBtnMain",    buttons: ".btn-helpmap",                               default: false },
+            { key: "settings-btn-focus",   sharedContainer: "#mapBtnMain",    buttons: ".btn-focus",                                 default: false },
+            { key: "settings-btn-servers", sharedContainer: "#mapBtnServers", buttons: "#servers",                                  default: true },
+            { key: "settings-btn-session", sharedContainer: "#mapBtnServers", buttons: "#sessionGroup",                             default: true },
+            { key: "settings-btn-undo",        sharedContainer: "#mapBtnActions",     buttons: ".btn-undo",         default: true },
+            { key: "settings-btn-delete",      sharedContainer: "#mapBtnActions",     buttons: ".btn-delete",       default: true },
+            { key: "settings-btn-download",    sharedContainer: "#mapBtnMain",        buttons: ".btn-download",     default: false },
+            { key: "settings-btn-upload",      sharedContainer: "#mapBtnMain",        buttons: ".btn-upload",       default: false },
+        ];
+    }
+
+    _updateSharedContainer(containerSelector) {
+        if (!containerSelector) return;
+        const defs = this.getButtonToggleDefinitions().filter(d => d.sharedContainer === containerSelector);
+        const anyVisible = defs.some(d => !$(d.buttons).data("placeholder"));
+        $(containerSelector).toggle(anyVisible);
+    }
+
+    _updateDotsButton() {
+        const anyDemoted = this.getButtonToggleDefinitions().some(d =>
+            $(d.buttons).data("placeholder")
+        );
+        $("#mapBtnTools").toggle(anyDemoted);
+    }
+
+    _moveButtonsToMenu(def) {
+        const $dotsGroup = $("#mapBtnTools .btnLayersGroup");
+        $(def.buttons).each((_, el) => {
+            const $el = $(el);
+            const $placeholder = $("<span class=\"btn-placeholder\"></span>");
+            $el.before($placeholder);
+            $el.data("placeholder", $placeholder);
+            $dotsGroup.append($el);
+        });
+        this._updateSharedContainer(def.sharedContainer);
+        this._updateDotsButton();
+    }
+
+    _restoreButtons(def) {
+        $(def.buttons).each((_, el) => {
+            const $el = $(el);
+            const $placeholder = $el.data("placeholder");
+            if ($placeholder && $placeholder.length) {
+                $placeholder.before($el);
+                $placeholder.remove();
+            }
+            $el.removeData("placeholder");
+        });
+        this._updateSharedContainer(def.sharedContainer);
+        this._updateDotsButton();
+    }
+
+    loadButtonToggles() {
+        this.getButtonToggleDefinitions().forEach(def => {
+            const stored = localStorage.getItem(def.key);
+            const val = stored === null ? def.default : stored === "1";
+            if (!val) this._moveButtonsToMenu(def);
+            $(`.mapBtnToggle[data-key="${def.key}"]`).toggleClass("active", val);
+        });
+        this._updateDotsButton();
+    }
+
+    bindButtonToggles() {
+        $(".mapBtnToggle").on("click", (e) => {
+            const btn = $(e.currentTarget);
+            const key = btn.data("key");
+            const def = this.getButtonToggleDefinitions().find(d => d.key === key);
+            if (!def) return;
+
+            const newVal = !btn.hasClass("active");
+            btn.toggleClass("active", newVal);
+            localStorage.setItem(key, newVal ? 1 : 0);
+
+            if (newVal) {
+                this._restoreButtons(def);
+            } else {
+                this._moveButtonsToMenu(def);
+            }
+        });
+    }
+
+    /**
+     * Bind settings button event (switch to map mode from legacy)
+     */
+    bindMenuButtons() {
+        $(document).on("click", ".returnBtn", (event) => {
+            event.preventDefault();
+            this.app.switchUI();
+        });
+    }
+
+    /**
+     * Set a setting value and trigger side effects
+     * @param {string} name - Setting name
+     * @param {*} value - New value
+     */
+    set(name, value) {
+        const def = this.definitions[name] || this.sliderDefinitions[name];
+        if (!def) {
+            console.warn(`Unknown setting: ${name}`);
+            return;
+        }
+
+        this[name] = value;
+        localStorage.setItem(def.key, +value);
+
+        if (def.onChange) {
+            def.onChange(value);
+        }
+    }
+
+    /**
+     * Get a setting value
+     * @param {string} name - Setting name
+     * @returns {*} Setting value
+     */
+    get(name) {
+        return this[name];
+    }
+
+    isModEnabled(modKey) {
+        const stored = localStorage.getItem(`settings-mod-${modKey}`);
+        // 桌面离线版：本地已内置全部模组图层，默认全部启用（用户仍可在设置里关掉）
+        return stored === null ? true : stored === "1";
+    }
+
+    setModEnabled(modKey, enabled) {
+        localStorage.setItem(`settings-mod-${modKey}`, +enabled);
+    }
+}

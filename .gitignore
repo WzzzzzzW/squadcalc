@@ -1,0 +1,40 @@
+mortar.code-workspace
+.vscode/
+.env
+debug.log
+node_modules/
+dist/
+public/dist/
+config/test-results/
+*.Identifier
+/.idea
+maintenance.enable
+/.fastRequest
+.claude/
+.agents/
+skills-lock.json
+
+# ---- 桌面版新增 ----
+
+# 离线数据（约 1 GB）：由 tools/export-offline.mjs 生成，不进仓库
+public/api/
+
+# Rust / Tauri 构建产物
+src-tauri/target/
+src-tauri/gen/
+
+# 安装包与构建产物
+*.exe
+*.msi
+
+# 运行时目录（应用与 exe 同目录生成）
+/sqdata.txt
+/webview2/
+/3d/
+
+# 本地构建缓存
+.cache/
+
+# 系统文件
+Thumbs.db
+Desktop.ini

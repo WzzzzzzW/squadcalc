@@ -1,0 +1,328 @@
+/* 3D 资源按需下载与管理 */
+#threeDFilesDialog {
+    width: min(960px, 94vw);
+    max-height: 90vh;
+
+    .tdf-title {
+        margin: 0 0 4px;
+    }
+
+    .tdf-hint {
+        margin: 0 0 16px;
+        font-size: 12px;
+        opacity: 0.65;
+    }
+
+    /* 存储目录行 */
+    .tdf-dirRow {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .tdf-root {
+        flex: 1;
+        min-width: 0;
+        padding: 8px 10px;
+        border: 1px solid var(--global-border, #3a3f47);
+        border-radius: 4px;
+        background: var(--global-bg-alt, #1b1e23);
+        color: inherit;
+        font-size: 12px;
+    }
+
+    .tdf-total {
+        font-size: 11px;
+        opacity: 0.6;
+        white-space: nowrap;
+    }
+
+    /* 过滤行 */
+    .tdf-filterRow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 9px 0;
+        margin-bottom: 4px;
+        border-bottom: 1px solid var(--global-border, #3a3f47);
+    }
+
+    .tdf-only {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        opacity: 0.9;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .tdf-summary {
+        margin-left: auto;
+        font-size: 12px;
+        opacity: 0.7;
+        white-space: nowrap;
+    }
+
+    /* 列表 */
+    .tdf-list {
+        overflow-y: auto;
+        min-height: 220px;
+        max-height: 50vh;
+        padding: 4px 4px 4px 0;
+    }
+
+    .tdf-group {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 14px 0 6px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--global-border, #3a3f47);
+    }
+
+    .tdf-group:first-child {
+        margin-top: 4px;
+    }
+
+    .tdf-groupName {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        opacity: 0.9;
+    }
+
+    .tdf-groupCount {
+        font-size: 11px;
+        opacity: 0.55;
+    }
+
+    .tdf-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 4px;
+    }
+
+    .tdf-row:hover {
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .tdf-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .tdf-name {
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .tdf-meta {
+        font-size: 11px;
+        opacity: 0.62;
+    }
+
+    .tdf-err {
+        font-size: 11px;
+        color: #e08a78;
+        word-break: break-all;
+    }
+
+    .tdf-side {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: none;
+    }
+
+    /* 进度条 */
+    .tdf-bar {
+        display: block;
+        height: 4px;
+        width: 100%;
+        margin-top: 2px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.09);
+        overflow: hidden;
+    }
+
+    .tdf-bar i {
+        display: block;
+        height: 100%;
+        background: var(--global-accent, #f0a84b);
+        transition: width 0.2s ease;
+    }
+
+    /* 底部：次要操作放这里，避免误点 */
+    .tdf-footRow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid var(--global-border, #3a3f47);
+    }
+
+    .tdf-footSpacer {
+        flex: 1;
+    }
+
+    .tdf-status {
+        font-size: 11px;
+        opacity: 0.6;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .tdf-link {
+        padding: 4px 2px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font-size: 11px;
+        opacity: 0.5;
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    .tdf-link:hover {
+        opacity: 0.95;
+    }
+
+    .tdf-link-danger:hover {
+        color: #e08a78;
+    }
+
+    .tdf-empty {
+        padding: 34px 20px;
+        text-align: center;
+        font-size: 12px;
+        opacity: 0.55;
+    }
+
+    /* 按钮 */
+    .tdf-btn {
+        padding: 6px 13px;
+        border: 1px solid var(--global-border, #3a3f47);
+        border-radius: 4px;
+        background: var(--global-bg-alt, #1b1e23);
+        color: inherit;
+        font-size: 12px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: border-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .tdf-btn:hover:not(:disabled) {
+        border-color: var(--global-accent, #f0a84b);
+    }
+
+    .tdf-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    .tdf-primary {
+        border-color: var(--global-accent, #f0a84b);
+        opacity: 0.95;
+    }
+
+    .tdf-del {
+        opacity: 0.75;
+    }
+
+    .tdf-del:hover:not(:disabled) {
+        border-color: #c2563f;
+        color: #e08a78;
+    }
+}
+
+/* 打开 3D 时的引导下载 */
+#tdfPrompt {
+    width: min(460px, 92vw);
+    padding: 22px 24px 20px;
+
+    .tdf-promptTitle {
+        margin: 0 0 6px;
+        font-size: 15px;
+    }
+
+    .tdf-promptHint {
+        margin: 0 0 14px;
+        font-size: 12px;
+        line-height: 1.5;
+        opacity: 0.65;
+    }
+
+    .tdf-promptInfo {
+        margin-bottom: 12px;
+        font-size: 12px;
+        opacity: 0.85;
+    }
+
+    .tdf-promptMsg {
+        margin-top: 8px;
+        min-height: 15px;
+        font-size: 11px;
+        opacity: 0.7;
+    }
+
+    .tdf-bar {
+        display: block;
+        height: 4px;
+        margin-top: 10px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.09);
+        overflow: hidden;
+    }
+
+    .tdf-bar i {
+        display: block;
+        height: 100%;
+        background: var(--global-accent, #f0a84b);
+        transition: width 0.2s ease;
+    }
+
+    .tdf-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .tdf-btn {
+        padding: 7px 14px;
+        border: 1px solid var(--global-border, #3a3f47);
+        border-radius: 4px;
+        background: var(--global-bg-alt, #1b1e23);
+        color: inherit;
+        font-size: 12px;
+        cursor: pointer;
+        transition: border-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .tdf-btn:hover:not(:disabled) {
+        border-color: var(--global-accent, #f0a84b);
+    }
+
+    .tdf-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    .tdf-primary {
+        border-color: var(--global-accent, #f0a84b);
+        opacity: 0.95;
+    }
+}

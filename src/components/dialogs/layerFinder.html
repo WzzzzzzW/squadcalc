@@ -1,0 +1,23 @@
+<dialog id="layerFinder" class="animate__animated animate__zoomIn">
+    <form method="dialog">
+        <button class="closeModal">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"/></svg>
+        </button>
+    </form>
+
+    <h2 class="lf-title" data-i18n="common:lfTitle">图层速查</h2>
+    <p class="lf-hint" data-i18n="common:lfHint">看缩略图直接定位地图与图层，点一下即可切换</p>
+
+    <div class="lf-searchRow">
+        <input type="search" id="lfSearch" class="lf-search" autocomplete="off" spellcheck="false" placeholder="搜索地图或图层…" />
+        <span class="lf-total" id="lfTotal"></span>
+    </div>
+
+    <div class="lf-scroll" id="lfScroll">
+        <div class="lf-mapStrip" id="lfMaps"></div>
+        <div class="lf-layersHead"><span id="lfMapName"></span></div>
+        <div class="lf-grid" id="lfLayers"></div>
+    </div>
+
+    <div class="lf-loading" id="lfLoading" data-i18n="common:lfLoading">加载中…</div>
+</dialog>

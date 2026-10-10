@@ -1,0 +1,56 @@
+/* 地图下拉里的缩略图（select2 模板），保持原有下拉外观，只加图不改结构 */
+#mapSelector .select2-results__option {
+    /* 全局样式把行高设成了 0.75em，比字号还小，文字上下会被裁掉——这里恢复 */
+    line-height: 1.3 !important;
+    height: auto;
+    min-height: 44px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.select2-results__option .sq-mapOption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.sq-mapThumb {
+    width: 52px;
+    height: 34px;
+    object-fit: cover;
+    border-radius: 3px;
+    flex: none;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.sq-mapOptionName {
+    /* 最多两行，不再单行截断 */
+    white-space: normal;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    line-height: 1.3;
+    max-height: 2.7em;
+}
+
+.sq-mapSelection {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sq-mapThumbSm {
+    width: 30px;
+    height: 20px;
+    object-fit: cover;
+    border-radius: 2px;
+    flex: none;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+/* 地图列表较长，限制下拉高度避免顶出屏幕 */
+#mapSelector .select2-results__options {
+    max-height: 58vh;
+}

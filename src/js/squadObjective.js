@@ -1,0 +1,647 @@
+import { DivIcon, Marker } from "leaflet";
+import { App } from "../app.js";
+import i18next from "i18next";
+import tippy from "tippy.js";
+import "tippy.js/dist/tippy.css";
+import { FactionCtxMenu } from "./squadFactionCtxMenu.js";
+import SquadLaneSolver from "./squadLaneSolver.js";
+import { SquadCapZone } from "./squadCapZone.js";
+
+// Modded factionIDs are prefixed with the mod key (e.g. "SU_RGF", "WZ_RGF"), but
+// faction translations are shared with vanilla ("RGF") - strip the prefix for
+// i18next lookup. Images use the full prefixed factionID as-is.
+export function translationId(factionID) {
+    return factionID ? factionID.replace(/^(SU|WZ)_/, "").replace(/-\d+$/, "").replace(/P[12]$/, "") : factionID;
+}
+
+export class SquadObjective {
+
+    constructor(latlng, layer, objCluster, isMain, cluster) {
+        this.name = objCluster.name;
+        this.objectName = objCluster.objectName;
+        this.objCluster = objCluster;
+        this.cluster = cluster;
+        this.layerGroup = layer.activeLayerMarkers;
+        this.layer = layer;
+        this.latlng = latlng;
+        this.clusters = [];
+
+        // Every candidate slot this flag occupies, by point objectName. The randomizer can
+        // offer the same capture zone on several routes and at several depths. objectName is
+        // unique per layer, name is not, so the solver identifies points by it.
+        this.candidateIds = [];
+        this.capZone = new SquadCapZone(layer);
+        this.isMain = isMain;
+        this.isHidden = false;
+        this.position = cluster.pointPosition;
+        this.isNext = false;
+        this.percentage = "";
+
+        console.debug("[LAYER] creating flag", this.name, "at position", this.position);
+        let html;
+        if (!this.isMain){ 
+            html = this.name;
+        } else {
+            if (this.objectName === "00-Team1 Main") {
+                html = `<span><span data-i18n="common:team1">${i18next.t("team1", { ns: "common" })}</span></span>`;
+            } else {
+                html = `<span><span data-i18n="common:team2">${i18next.t("team2", { ns: "common" })}</span></span>`;
+            }
+        }
+
+        this.nameText = new Marker(latlng, {
+            interactive: false,
+            keyboard: false,
+            icon: new DivIcon({
+                className: "objText",
+                keyboard: false,
+                html: html,
+                iconSize: [300, 20],
+                iconAnchor: App.userSettings.circlesFlags ? [150, 38] : [150, 32],
+                shadowUrl: "../img/icons/markers/weapons/marker_shadow.webp",
+                shadowSize: [0, 0],
+            })
+        }).addTo(this.layerGroup);
+
+        // Temporary icon to avoid 404s on leaflet shadow marker
+        let tempIcon = new DivIcon({
+            shadowUrl: "../img/icons/markers/weapons/marker_shadow.webp",
+            shadowSize: [0, 0],
+        });
+
+        this.flag = new Marker(latlng, {icon : tempIcon}).addTo(this.layerGroup);
+        this.addCluster(cluster, objCluster);
+        this.updateMainIcon();
+
+        this.flag.on("click", this._handleClick, this);
+        this.flag.on("contextmenu", this._handleContextMenu, this);
+        this.flag.on("dblclick", this._handleDoubleClick, this);
+        this.flag.on("pointerover", this._handleMouseOver, this);
+        this.flag.on("pointerout", this._handleMouseOut, this);
+    }
+
+
+    showPercentage() {
+        const html = Math.round(this.percentage) + "%";
+
+        this.percentageText = new Marker(this.latlng, {
+            interactive: false,
+            keyboard: false,
+            icon: new DivIcon({
+                className: "objText",
+                keyboard: false,
+                html,
+                iconSize: [300, 20],
+                iconAnchor: App.userSettings.circlesFlags ? [150, -18] : [150, -12],
+                shadowUrl: "../img/icons/markers/weapons/marker_shadow.webp",
+                shadowSize: [0, 0],
+            })
+        }).addTo(this.layerGroup);
+    }
+
+
+    /**
+     * Per-depth breakdown tooltip on the flag icon, for every objective that has
+     * a solved percentage (even a single-depth one, to spell out its one step).
+     */
+    _showPercentageTooltip() {
+        if (!this.percentageBreakdown?.length) return;
+
+        const el = this.flag.getElement();
+        // Don't clobber a tippy owned by something else on this element (e.g. the
+        // faction context menu on a main flag).
+        if (!el || (el._tippy && el._tippy !== this.percentageTippy)) return;
+        if (el._tippy) el._tippy.destroy();
+
+        // Each row's own lanes (not the flag's overall set) - a flag's steps can come
+        // from different lanes, so the badges must match the step they're next to.
+        const rows = this.percentageBreakdown
+            .map(({ step, value, lanes }) => {
+                const badges = lanes
+                    .map((l) => `<span style="background-color:${this.layer.getLaneColor(SquadLaneSolver.laneLabel(l), l)}">${SquadLaneSolver.laneLabel(l)}</span>`)
+                    .join("");
+                return `
+                    <div class="laneTooltipStep">
+                        <span class="laneTooltipStepLanes">${badges}</span>
+                        <span class="laneTooltipStepLead">${i18next.t("positionStep", { ns: "tooltips", step })}</span>
+                        <span class="laneTooltipStepValue">${Math.round(value)}%</span>
+                    </div>`;
+            })
+            .join("");
+
+        const html = `
+            <div class="laneTooltipCard">
+                <div class="laneTooltipTitle">
+                    <span class="laneTooltipName" title="${this.name}">${this.name}</span>
+                    <span class="laneTooltipTotal">${Math.round(this.percentage)}%</span>
+                </div>
+                <div class="laneTooltipBody">${rows}</div>
+            </div>
+        `;
+
+        this.percentageTippy = tippy(el, {
+            content: html,
+            allowHTML: true,
+            placement: "top",
+            popperOptions: {
+                modifiers: [{ name: "flip", options: { fallbackPlacements: ["bottom"] } }],
+            },
+            theme: "laneInfo",
+            animation: "fade",
+            delay: [200, 0],
+        });
+        this.percentageTippy.show();
+    }
+
+    _hidePercentageTooltip() {
+        const el = this.flag.getElement();
+        if (el?._tippy && el._tippy === this.percentageTippy) el._tippy.destroy();
+        this.percentageTippy = null;
+    }
+
+    update(){
+        if (this.isSelected){
+            this.select();
+        } else if (!this.isHidden) {
+            this.unselect();
+            // unselect() → updateMarker() drops percentageText, so put it back
+            if (App.userSettings.showNextFlagsPercentages && this.percentageBreakdown?.length) this.showPercentage();
+        }
+    }
+
+
+    updateMainIcon() {
+        if (!this.isMain) return;
+
+        let dropdownSelector, fileName;
+
+        if (this.objectName === "00-Team1 Main") {
+            dropdownSelector = ".dropbtn8";
+        } else {
+            dropdownSelector = ".dropbtn10";
+        }
+
+        fileName = $(dropdownSelector).val();
+        const isMainFallback = !fileName || !App.userSettings.enableFactions;
+        const folder = isMainFallback ? "" : `${this.layer.modFolder}/`;
+        if (isMainFallback) {
+            fileName = App.userSettings.circlesFlags ? "main_circle" : "main";
+        } else if (App.userSettings.circlesFlags) {
+            fileName = `circles/${fileName}`;
+        }
+        this.flag.getElement().style.backgroundImage = `url('/img/flags/${folder}${fileName}.webp')`;
+    }
+
+
+    select(){
+        let html = "";
+        let className = "flag selected";
+        this.isNext = false;
+        this.flag.removeFrom(this.layerGroup).remove();
+
+        if (App.userSettings.circlesFlags) className += " circleFlag";
+    
+        if (this.isMain) {
+            className += " main";
+        } else {
+            const positions = this.solverSteps();
+            html = positions.length > 1 ? positions.join("·") : (positions[0] ?? "");
+            if (positions.length > 1) className += positions.length > 2 ? " multiPos multiPosMany" : " multiPos";
+        }
+
+        this.updateMarker(className, html);
+
+        this.isSelected = true;
+        this.flag.on("click", this._handleClick, this);
+        this.flag.on("contextmenu", this._handleContextMenu, this);
+        this.flag.on("dblclick", this._handleDoubleClick, this);
+        this.flag.on("pointerover", this._handleMouseOver, this);
+        this.flag.on("pointerout", this._handleMouseOut, this);
+    }
+
+
+    updateMarker(className, html){
+        let nameTextClassName = "objText";
+
+        this.flag = new Marker(this.latlng, {
+            interactive: true,
+            keyboard: false,
+            icon: new DivIcon({
+                className: className,
+                html: html,
+                iconSize: [44, 22],
+                iconAnchor: [22, 11]
+            })
+        }).addTo(this.layerGroup);
+
+        if (!this.isMain){ 
+            html = this.name;
+        } else {
+
+            nameTextClassName += " main";
+
+            if (process.env.DISABLE_FACTIONS != "true" && App.userSettings.enableFactions) {
+
+                if (this.objectName === "00-Team1 Main") {
+                    html = `<span><span data-i18n="common:team1">${i18next.t("team1", { ns: "common" })}</span>`;
+                    if ($(".dropbtn8").val() != null) html += ` : <span data-i18n="factions:${translationId($(".dropbtn8").val())}">${i18next.t(translationId($(".dropbtn8").val()), { ns: "factions" })}</span>`;
+                } else {
+                    html = `<span><span data-i18n="common:team2">${i18next.t("team2", { ns: "common" })}</span>`;
+                    if ($(".dropbtn10").val() != null) html += ` : <span data-i18n="factions:${translationId($(".dropbtn10").val())}">${i18next.t(translationId($(".dropbtn10").val()), { ns: "factions" })}</span>`;
+                }
+                html += "</span>";
+
+            } else {
+                if (this.objectName === "00-Team1 Main") html = `<span data-i18n="common:team1">${i18next.t("team1", { ns: "common" })}</span>`;
+                else html = `<span data-i18n="common:team2">${i18next.t("team2", { ns: "common" })}</span>`;
+            }
+        }
+
+        this.nameText.removeFrom(this.layerGroup).remove();
+        if (this.percentageText) this.percentageText.removeFrom(this.layerGroup).remove();
+        this.nameText = new Marker(this.latlng, {
+            interactive: false,
+            keyboard: false,
+            icon: new DivIcon({
+                className: nameTextClassName,
+                keyboard: false,
+                html: html,
+                iconSize: [300, 20],
+                iconAnchor: App.userSettings.circlesFlags ? [150, 38] : [150, 32],
+                shadowUrl: "../img/icons/markers/weapons/marker_shadow.webp",
+                shadowSize: [0, 0],
+            })
+        }).addTo(this.layerGroup);
+
+        this.updateMainIcon();
+
+    }
+
+
+    unselect(){
+        let html = "";
+        let className = "flag";
+        const positions = this.layer.isRandomized ? this.solverSteps() : [];
+
+        if (App.userSettings.circlesFlags) className += " circleFlag";
+
+        if (this.isMain) {
+            className += this.isPerspectiveSelectable() ? " main selectable" : " main unselectable";
+        } else {
+            if (this.layer.isRandomized && positions.length){
+                html = positions.length > 1 ? positions.join("·") : positions[0];
+                className += " flag" + positions[0];
+                if (positions.length > 1) className += positions.length > 2 ? " multiPos multiPosMany" : " multiPos";
+            }
+        }
+
+        // "Next" is the shallowest depth still unconfirmed.
+        if (this.layer.isRandomized && positions.includes(this.layer.nextStep)){
+            className += " next";
+            this.isNext = true;
+        } else this.isNext = false;
+
+        // Any still-possible flag can be clicked, not only the next one - matches
+        // _confirmationFor()'s own eligibility check.
+        if (!this.isMain && positions.length && !this.isNext) {
+            className += " clickable";
+        }
+
+        this.flag.removeFrom(this.layerGroup).remove();
+        this.updateMarker(className, html);
+
+        this.isSelected = false;
+
+        if (this.layer.isRandomized){
+            this.flag.on("click", this._handleClick, this);
+            this.flag.on("contextmenu", this._handleContextMenu, this);
+            this.flag.on("dblclick", this._handleDoubleClick, this);
+            this.flag.on("pointerover", this._handleMouseOver, this);
+            this.flag.on("pointerout", this._handleMouseOut, this);
+        }
+    }
+
+    
+    /**
+     * Attach one more cluster (lane slot) that offers this same physical point.
+     * @param {object} cluster - the capture-zone cluster
+     * @param {object} [point] - the candidate inside that cluster. Its objectName identifies the slot.
+     */
+    addCluster(cluster, point){
+        this.clusters.push(cluster);
+        if (point?.objectName && !this.candidateIds.includes(point.objectName)) {
+            this.candidateIds.push(point.objectName);
+        }
+        this.updatePosition();
+    }
+
+
+    /**
+     * This flag's state in the layer's latest solve.
+     * @returns {{steps: number[], probability: number, byStep: Map<number, number>}} depths
+     *          where it is still possible (1 = first point after the main), the chance it is
+     *          on the route overall, and that same chance broken down per depth
+     */
+    solverInfo(){
+        const result = this.layer.solverResult;
+        const steps = new Set();
+        const byStep = new Map();
+        const lanes = new Set();
+        const lanesByStep = new Map();
+        let probability = 0;
+
+        if (result) {
+            this.candidateIds.forEach((id) => {
+                const entry = result.byId.get(id);
+                if (!entry) return;
+                entry.steps.forEach((step) => steps.add(step));
+                probability += entry.probability;
+                entry.byStep.forEach((share, step) => byStep.set(step, (byStep.get(step) || 0) + share));
+                entry.lanes.forEach((lane) => lanes.add(lane));
+                entry.lanesByStep.forEach((stepLanes, step) => {
+                    if (!lanesByStep.has(step)) lanesByStep.set(step, new Set());
+                    stepLanes.forEach((lane) => lanesByStep.get(step).add(lane));
+                });
+            });
+        }
+
+        return {
+            steps: [...steps].sort((a, b) => a - b),
+            probability,
+            byStep,
+            lanes: [...lanes].sort((a, b) => a - b),
+            lanesByStep,
+        };
+    }
+
+
+    /**
+     * Depths where this flag is still possible.
+     * @returns {number[]}
+     */
+    solverSteps(){
+        return this.solverInfo().steps;
+    }
+
+
+    /**
+     * Whether clicking this main would be accepted as the depth-counting perspective.
+     * On Invasion, only the attacker's main qualifies - see SquadLayer.isInvasion().
+     * @returns {boolean}
+     */
+    isPerspectiveSelectable(){
+        if (!this.layer.isRandomized) return false;
+        if (!this.layer.isInvasion()) return true;
+        return this === this.layer._mainForNode(this.layer.solver.start);
+    }
+
+
+    /**
+     * Repaint this flag from the layer's latest solve: hidden when no longer possible,
+     * selected when confirmed, otherwise numbered with its remaining depths.
+     * @param {boolean} preview - hover preview, so fade instead of rebuilding
+     */
+    applySolverResult(preview = false){
+
+        if (this.isMain) {
+            // Mains carry no candidates. They only show which side the depths count from,
+            // and the far main lights up once the chain has reached it.
+            if (preview) return;
+            if (this === this.layer.perspectiveMain) this.select();
+            else if (this === this.layer._farMain() && this.layer._routeComplete()) this.select();
+            else this.unselect();
+            return;
+        }
+
+        // RAAS/RVAAS are symmetric - until a main is picked to count depths from, no
+        // candidate can be ruled in or out yet, so nothing but the mains shows.
+        if (!this.layer.perspectiveMain) {
+            if (!preview && !this.isHidden) this.hide();
+            return;
+        }
+
+        const { steps, probability, byStep, lanes, lanesByStep } = this.solverInfo();
+
+        if (preview) {
+            if (steps.length) { if (this.isFadeOut) this._fadeIn(); }
+            else this._fadeOut();
+            return;
+        }
+
+        if (!steps.length) {
+            if (!this.isHidden) this.hide();
+            return;
+        }
+
+        if (this.isHidden) this.show();
+
+        if (this.layer.selectedFlags.includes(this)) {
+            this.select();
+            return;
+        }
+
+        this.unselect();
+
+        // Computed for every still-possible point, not only the next one, regardless of
+        // the setting below - the tooltip (hover) always needs it, the on-map label doesn't.
+        this.percentage = probability * 100;
+        this.percentageBreakdown = [...byStep.entries()]
+            .sort((a, b) => a[0] - b[0])
+            .map(([step, share]) => ({ step, value: share * 100, lanes: [...(lanesByStep.get(step) ?? [])].sort((a, b) => a - b) }));
+        this.lanes = lanes;
+
+        if (App.userSettings.showNextFlagsPercentages) {
+            this.showPercentage();
+        }
+    }
+
+
+    /**
+     * Refresh this flag's icon. The depth label comes from the solver, which does not
+     * exist yet during construction, so the flag starts unnumbered and the layer paints
+     * it after init().
+     */
+    updatePosition() {
+
+        let className = "flag";
+        let html = "";
+        const positions = this.layer.isRandomized ? this.solverSteps() : [];
+
+        // Shallowest remaining depth, or the raw cluster data before the first solve.
+        // Only used for the colour class.
+        this.position = positions[0] ?? this.clusters.reduce(
+            (min, item) => (item.pointPosition != null && item.pointPosition < min ? item.pointPosition : min),
+            Infinity
+        );
+        if (!Number.isFinite(this.position)) this.position = 0;
+
+        if (App.userSettings.circlesFlags){
+            className += " circleFlag";
+        }
+
+        if (this.isMain) {
+            className += this.isPerspectiveSelectable() ? " main selectable" : " main unselectable";
+        } else if (this.layer.isRandomized && positions.length) {
+            className += " flag" + positions[0];
+            html = positions.length > 1 ? positions.join("·") : positions[0];
+            if (positions.length > 1) className += positions.length > 2 ? " multiPos multiPosMany" : " multiPos";
+        }
+
+        // Refresh the flag icon
+        this.flag.setIcon(new DivIcon({
+            className: className,
+            html: html,
+            iconSize: [44, 22],
+            iconAnchor: [22, 11]
+        }));
+    }
+
+
+    _handleClick(){
+        clearTimeout(this.mouseOverTimeout);
+        clearTimeout(this.percentageHoverTimeout);
+        this._hidePercentageTooltip();
+        this.layer.hideLanes();
+        if (!this.layer.isRandomized) return;
+        this.layer._handleFlagClick(this);
+    }
+
+    
+    _handleDoubleClick(){
+        return false;
+    }
+
+    
+    _handleContextMenu(e){
+
+        clearTimeout(this.mouseOverTimeout);
+        clearTimeout(this.percentageHoverTimeout);
+        this._hidePercentageTooltip();
+        this.layer.hideLanes();
+
+        if (this.isMain && App.userSettings.enableFactions && process.env.DISABLE_FACTIONS != "true") {
+            this.ctxMenu = new FactionCtxMenu(this.layer, this.objCluster.objectDisplayName).open(e);
+            return;
+        }
+
+        if (this.layer.isRandomized && this.isSelected) this.layer._handleFlagClick(this, true, true);
+    }
+
+    _handleMouseOver() {
+
+        // On RAAS/Invasion, preview the lane on hover
+        if (this.layer.isRandomized) {
+            if (!this.isSelected && !this.isHidden && App.userSettings.revealLayerOnHover) {
+                this.mouseOverTimeout = setTimeout(() => {
+                    this.layer._renderFromSolver(this);
+                }, 500);
+            }
+        }
+
+        // If the user has the capzones on hover setting enabled, show them
+        if (App.userSettings.capZoneOnHover) {
+            if (this.layer.map.getZoom() > this.layer.map.detailedZoomThreshold){
+                this.capZone.reveal();
+            }
+        }
+
+        if (this.layer.isRandomized && !this.isMain) {
+            this.percentageHoverTimeout = setTimeout(() => {
+                this.nameText.setOpacity(0);
+                this.percentageText?.setOpacity(0);
+                this._showPercentageTooltip();
+                this.layer.showLanes(this.layer._previewLanesFor(this));
+            }, 500);
+        }
+
+    }
+
+    _handleMouseOut(){
+        // Cancel the timeout if the user moves the mouse out before 1 second
+        clearTimeout(this.mouseOverTimeout);
+        clearTimeout(this.percentageHoverTimeout);
+
+        const opacity = this.isFadeOut ? 0.15 : 1;
+        this.nameText.setOpacity(opacity);
+        this.percentageText?.setOpacity(opacity);
+
+        this._hidePercentageTooltip();
+
+        this.layer.hideLanes();
+
+        if (App.userSettings.capZoneOnHover) this.capZone.hide();
+
+        this.layer.flags.forEach((flag) => {
+            if (flag.isHidden) return;
+            flag._fadeIn();
+            flag.isFadeOut = false;
+            if (!App.userSettings.capZoneOnHover) {
+                if (this.layer.map.getZoom() > this.layer.map.detailedZoomThreshold){
+                    flag.capZone.reveal();
+                }
+            }
+        });
+
+    }
+
+
+
+    hide(){
+        this.nameText.removeFrom(this.layerGroup);
+        this.percentageText?.removeFrom(this.layerGroup).remove();
+        this.flag.removeFrom(this.layerGroup);
+        this.flag.options.interactive = false;
+        this.flag.off();
+        this.capZone.hide();
+        this.isHidden = true;
+    }
+
+    _setOpacity(value){
+        this.flag.setOpacity(value);
+        this.nameText.setOpacity(value);
+        this.percentageText?.setOpacity(value);
+
+        // if opacity = 0, this.flag can't be clicked
+        // css cursor is set to default on hover
+        if (value === 0){
+            $(".flag").css("pointer-events", "none");
+        } else {
+            $(".flag").css("pointer-events", "all");
+        }
+    }
+
+
+    _fadeIn(){
+        this.flag.setOpacity(1);
+        this.nameText.setOpacity(1);
+        this.percentageText?.setOpacity(1);
+        this.isFadeOut = false;
+    }
+
+    _fadeOut(){
+        this.flag.setOpacity(0.15);
+        this.nameText.setOpacity(0.15);
+        this.percentageText?.setOpacity(0.15);
+        this.isFadeOut = true;
+    }
+
+    delete(){
+        this.nameText.removeFrom(this.layerGroup).remove();
+        this.percentageText?.removeFrom(this.layerGroup).remove();
+        this.flag.removeFrom(this.layerGroup).remove();
+    }
+
+    show(){
+        this.nameText.setOpacity(1).addTo(this.layerGroup);
+        this.flag.setOpacity(1).addTo(this.layerGroup);
+        this.unselect();
+        this.isHidden = false;
+
+        if (App.userSettings.capZoneOnHover) return;
+        
+        if (this.layer.map.getZoom() > this.layer.map.detailedZoomThreshold){
+            this.capZone.reveal();
+        }
+
+    }
+}

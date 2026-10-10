@@ -1,0 +1,28 @@
+[package]
+name = "squadcalc-desktop"
+version = "46.1.0"
+description = "SquadCalc Desktop - 离线版战术小队地图/迫击炮助手"
+authors = ["SquadCalc"]
+edition = "2021"
+
+# 注意：本工程刻意不声明 [lib]。
+# 内置离线数据近 1GB，会以静态资源形式编入 crate；若同时产出 lib（rlib/staticlib 都是 ar 归档），
+# rustc 写超大 .a 时会 panic（ar_archive_writer）。纯 bin 工程可直接链接出 exe，规避该问题。
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["fs"] }
+
+# Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true

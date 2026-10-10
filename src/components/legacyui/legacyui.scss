@@ -1,0 +1,188 @@
+@use "../shared/variables";
+
+#classic_ui {
+    height: 40vh;
+    #settings {
+        border-radius: 5px;
+        border: 5px solid variables.$mainTxtColor;
+        font-size: 1.5em;
+        font-weight: bold;
+        margin: 0.7em auto;
+        padding: 1em;
+        position: relative;
+        i {
+            font-size: 50%;
+            margin: -10px; // ugly hack
+        }
+        svg {
+            fill: white;
+            height: 0.7em;
+            width: 0.7em;
+
+        }
+        #bearing svg {
+            transform: rotate(-45deg);
+            padding-bottom: 5px;
+        }
+        #highlow {
+            background-color: transparent;
+            padding: 0 5px;
+            &.active {
+                cursor: pointer;
+                &:active {
+                    transform: scale(0.7);
+                }
+                &:hover {
+                    svg {
+                        fill: variables.$mainColor;
+                    }
+                }
+            }
+            path {
+                pointer-events: none;
+            }
+
+        }
+        #savebutton {
+            background-color: transparent;
+            border: none;
+            bottom: 0;
+            color: variables.$mainTxtColor;
+            padding: 0 5px;
+            position: absolute;
+            right: 0;
+            transition: all 0.1s ease-out;
+            svg {
+                cursor:pointer;
+                font-size: 0.8em;
+                position: relative;
+                margin: 0;
+                transition: all 0.3s ease-out;
+                &:hover {
+                    fill: variables.$mainColor;
+                }
+            }
+            &:active {
+                transform: scale(0.7);
+            }
+            &:focus {
+                outline: none;
+            }
+        }
+    }
+    .saved_list svg {
+        fill: variables.$mainTxtColor;
+        height: 1em;
+        width: 1em;
+        &:hover {
+            fill: variables.$mainColor;
+            cursor: pointer;
+            transform: scale(1.1);
+        }
+    }
+    .copy {
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    .coord {
+        padding: 0.625em 0;
+        img {
+            height: 30px;
+        }
+    }
+    .pure-g [class*="pure-u"] .errorMsg {
+        cursor: default;
+        font-size: 0.7em;
+        line-height: 2em;
+        color: variables.$mainColor;
+    }
+    .error2 {
+        border-bottom: 3px solid variables.$mainColor;
+    }
+    #saved {
+        font-size: 0.6em;
+        .friendlyname {
+            border-style: none;
+            font-size: 1em;
+            height: auto;
+            min-width: 20px;
+            text-align: right;
+            text-transform: none;
+            width: 100px;
+        }
+        .savespan {
+            font-weight: bold;
+            &:hover {
+                cursor: pointer;
+            }
+        }
+        #ruler {
+            white-space: nowrap;
+            visibility: hidden;
+            font-size: 1em;
+            font-weight: bold;
+        }
+    }
+}
+
+#footerButtons {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 0.7em;
+    z-index: 10;
+    padding: 0.5em 0.5em calc(0.5em);
+    border-radius: 40px 40px 0;
+    pointer-events: none;
+}
+
+.fabs {
+    height: 2em;
+    width: 2em;
+    position: relative;
+    input {
+        display: none;
+    }
+    .fab {
+        background: #333;
+        border-radius: 50%;
+        height: 2em;
+        width: 2em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease, background-color 0.4s ease;
+        cursor: pointer;
+        pointer-events: all;
+        &:active {
+            transform: scale(0.85);
+        }
+        &:hover {
+            background: variables.$mainColor;
+            transform: scale(1.1);
+        }
+        svg {
+            fill: white;
+            height: 1em;
+            width: 1em;
+            transition: transform 0.3s ease;
+        }
+    }
+}
+
+.leader-line {
+    z-index: -1;
+}
+
+.tooltipsubtext {
+    font-size: 0.6em;
+    letter-spacing: 0.05rem;
+    font-weight: normal;
+}

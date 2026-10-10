@@ -1,0 +1,69 @@
+<dialog id="weaponInformation" class="animate__animated animate__zoomIn">
+    <form method="dialog">
+        <button class="closeModal">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"/></svg>
+        </button>
+    </form>
+
+    <h2 id="dialogWeaponTitle" data-i18n="common:weaponInf">Weapon Informations</h2>
+
+    <img class="weaponIcon" alt="weapon icon">
+
+    <div class="moveToRow">
+        <input type="text" class="moveToInput" maxlength="20" placeholder="A02-3-5-2" data-i18n-placeholder="common:moveToPlaceholder">
+        <button type="button" class="moveToBtn" data-i18n="common:moveTo">Move to</button>
+    </div>
+
+    <div class="active">
+        <table>
+            <tbody>
+                <tr>
+                    <td data-i18n="common:velocity" class="infVelocityTooltip info"></td><td class="infVelocity"></td>
+                </tr>
+                <tr>
+                    <td data-i18n="common:range"></td><td class="infRange"></td>
+                </tr>
+                <tr>
+                    <td data-i18n="common:moa" class="infMOATooltip info"></td><td class="infMOA"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table>
+            <tbody>
+                <tr>
+                    <td data-i18n="common:explosionDamage"></td><td class="infExplosionDamage"></td>
+                </tr>
+                <tr>
+                    <td data-i18n="common:explosionDamage100Radius"></td><td class="inf100damage"></td>
+                </tr>
+                <tr>
+                    <td data-i18n="common:explosionDamage25Radius"></td><td class="inf25damage"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="active">
+        <table>
+            <tbody>
+                <tr id="angleChoice">
+                    <td data-i18n="common:angle" class="noborder">Angle :</td>
+                    <td class="noborder">
+                        <div id="angleChoiceSettings">
+                            <label>
+                                <input type="radio" id="angleChoiceLow" name="angleChoice" value="low">
+                                <span data-i18n="common:low"></span>
+                            </label>
+                            <label>
+                                <input type="radio" id="angleChoiceHigh" name="angleChoice" value="high" checked="checked">
+                                <span data-i18n="common:high"></span>
+                            </label>   
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</dialog>
