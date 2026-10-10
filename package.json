@@ -15,11 +15,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git:/github.com/sh4rkman/SquadCalc"
+    "url": "git+https://github.com/WzzzzzzW/squadcalc.git"
   },
   "homepage": "https://squadcalc.app/",
   "bugs": {
-    "url": "https://github.com/sh4rkman/SquadCalc/issues"
+    "url": "https://github.com/WzzzzzzW/squadcalc/issues"
   },
   "private": false,
   "scripts": {
